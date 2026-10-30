@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CHEMSAFE AI</title>
+<style>
+:root{--g:#0f3d2e;--e:#10a56b;--m:#e3f6ec;--bg:#f8faf8;--c:#fff;--t:#26302b;--mu:#66736b;--r:#c0392b;--o:#d98a00;--sh:0 4px 18px rgba(15,61,46,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1511;--c:#16211b;--t:#e6efe9;--mu:#9bb0a5;--m:#1d3328;--sh:0 4px 18px #0006}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--t)}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--g);color:#fff}
+header button{background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
+.logo{font-weight:700;letter-spacing:.5px}.tag{font-size:11px;opacity:.8}
+nav{position:fixed;top:0;left:0;bottom:0;width:260px;background:var(--c);box-shadow:var(--sh);transform:translateX(-105%);transition:.25s;z-index:10;padding:16px;overflow:auto}
+nav.open{transform:none}nav a{display:block;padding:10px 12px;border-radius:10px;color:var(--t);cursor:pointer;margin:2px 0}
+nav a.act{background:var(--m);color:var(--e);font-weight:600}
+#ov{display:none;position:fixed;inset:0;background:#0005;z-index:9}#ov.show{display:block}
+main{max-width:900px;margin:0 auto;padding:16px}section{display:none}section.act{display:block}
+.card{background:var(--c);border-radius:16px;padding:16px;margin:12px 0;box-shadow:var(--sh)}
+h2{color:var(--e);margin:.2em 0}h3{margin:.2em 0 .5em}
+input,button.p,select{padding:10px 12px;border-radius:10px;border:1px solid #9bb0a566;background:var(--c);color:var(--t);font-size:15px}
+input{width:100%}button.p{background:var(--e);color:#fff;border:0;cursor:pointer;font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>input{flex:1;min-width:140px}
+.tbl{width:100%;border-collapse:collapse}.tbl td,.tbl th{padding:6px 8px;border-bottom:1px solid #9bb0a533;text-align:left;vertical-align:top}
+.lab{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--m);color:var(--e);margin-left:6px}
+.lab.w{background:#fdecc8;color:#8a5a00}.lab.d{background:#f9d6d2;color:var(--r)}
+.pic{display:inline-block;margin:4px;text-align:center;font-size:11px;max-width:80px}.pic img{width:56px;height:56px}
+.warn{border-left:5px solid var(--r)}.info{border-left:5px solid var(--o)}.ok{border-left:5px solid var(--mu)}
+.sm{color:var(--mu);font-size:12px}.chip{cursor:pointer;display:inline-block;margin:2px;padding:4px 10px;border-radius:99px;background:var(--m);color:var(--e);font-size:13px}
+.bar{height:10px;border-radius:5px;background:var(--e);margin:2px 0}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0}.tb{white-space:nowrap;padding:9px 14px;border-radius:99px;border:1px solid #9bb0a566;background:var(--c);color:var(--t);cursor:pointer;font-size:14px}.tb.on{background:var(--e);color:#fff;border-color:var(--e)}
+footer{padding:20px;text-align:center}
+</style><style>
+:root{--bg:#F7F2EF;--c:rgba(255,255,255,.55);--t:#171719;--mu:#5d6660;--g:#123D30;--e:#208B68;--m:#DCEDE4;--pk:#E9A6B2;--lv:#DCD4EE;--or:#EBA36F;--yl:#E8CA75;--sh:0 8px 32px rgba(18,61,48,.12)}
+html[data-theme=dark]{--bg:#171719;--c:rgba(255,255,255,.07);--t:#F7F2EF;--mu:#aab3ad;--m:rgba(32,139,104,.22);--sh:0 8px 32px #0007}
+body{background:radial-gradient(circle at 12% 8%,var(--pk)55,transparent 38%),radial-gradient(circle at 88% 18%,var(--lv)88,transparent 40%),radial-gradient(circle at 50% 100%,var(--m),transparent 45%),var(--bg);background-attachment:fixed;color:var(--t)}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif;font-weight:500}h1{font-size:clamp(34px,6vw,60px);line-height:1.05;margin:.2em 0}h2{color:var(--e)}
+header{background:rgba(18,61,48,.7);backdrop-filter:blur(14px);margin:10px;border-radius:18px;border:1px solid #fff3}
+.card{background:var(--c);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(233,166,178,.4);border-radius:22px;transition:.25s}.card:hover{box-shadow:0 10px 36px rgba(233,166,178,.3)}
+nav{background:rgba(247,242,239,.78);backdrop-filter:blur(20px)}html[data-theme=dark] nav{background:rgba(23,23,25,.85)}
+nav a.act{background:linear-gradient(90deg,var(--m),transparent);border-left:3px solid var(--pk)}
+button.p{background:linear-gradient(135deg,var(--e),var(--g));border-radius:99px}.warn{border-left:5px solid var(--or)!important}.info{border-left:5px solid var(--yl)!important}.ai{border-left:5px solid #8b79c9}
+section.act{animation:fi .4s}@keyframes fi{from{opacity:0;transform:translateY(8px)}}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center;padding:30px 0;position:relative}.hero svg{width:100%;max-width:380px;filter:drop-shadow(0 20px 40px rgba(233,166,178,.5));animation:fl 6s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-12px)}}.mol{position:absolute;border-radius:50%;background:var(--pk);opacity:.35;animation:fl 7s infinite}
+@media(max-width:700px){.hero{grid-template-columns:1fr}}
+.zone{display:inline-block;vertical-align:top;width:calc(50% - 8px);min-width:200px;margin:4px;padding:12px;border-radius:16px;border:1px dashed var(--e);background:var(--m)}
+.q{display:block;width:100%;text-align:left;margin:4px 0;padding:10px;border-radius:12px;border:1px solid #9bb0a566;background:var(--c);color:var(--t);cursor:pointer}.q.right{background:#bfe5d2;color:#123D30}.q.bad{background:#f4c7cd;color:#5a1a24}
+.tag{color:#fff}#printarea{display:none}
+@media print{body>*:not(#printarea){display:none!important}#printarea{display:block!important;color:#000;background:#fff;padding:20px}}
+.v3{position:relative;width:100%;height:340px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#123D30cc,#171719);touch-action:pan-y;cursor:grab;margin:10px 0}.v3.big{height:460px;margin:0}.sm3{height:280px}.v3 canvas{display:block;width:100%;height:100%}.ld{color:#DCEDE4;padding:20px;font-size:13px}
+#hero .hero{background:linear-gradient(135deg,#171719,#123D30 70%,#3a2330);border-radius:28px;padding:28px;color:#F7F2EF;box-shadow:var(--sh)}#hero .hero .sm{color:#cdd6d0}
+</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0716;--c:rgba(255,255,255,.07);--t:#f4eefb;--mu:#b9acd0;--m:rgba(32,139,104,.25);--e:#4fd6a4;--sh:0 12px 40px rgba(0,0,0,.45);--pk:#E9A6B2;--g:#123D30}
+html[data-theme=light]{--bg:#F7F2EF;--c:rgba(255,255,255,.6);--t:#171719;--mu:#5d6660;--e:#208B68;--sh:0 8px 30px rgba(60,20,80,.15)}
+body{font-family:Manrope,system-ui,sans-serif;color:var(--t);background:var(--bg);transition:background .5s}
+body[data-sec]{background:radial-gradient(ellipse at 15% 10%,var(--a1),transparent 50%),radial-gradient(ellipse at 90% 25%,var(--a2),transparent 48%),radial-gradient(ellipse at 40% 100%,var(--a3),transparent 55%),var(--bg);background-attachment:fixed}
+body{--a1:#7b2cbf88;--a2:#e0359a66;--a3:#10286088}
+body[data-sec=home]{--a1:#0f6b4a99;--a2:#12a7b866;--a3:#07241c}
+body[data-sec=compat]{--a1:#5a1248aa;--a2:#c4243c66;--a3:#8a5a0a55}
+body[data-sec=green]{--a1:#0d7a55aa;--a2:#2e8b5766;--a3:#0b2e22}
+body[data-sec=acc]{--a1:#2a2a30;--a2:#7a1530aa;--a3:#8a5a0a55}
+body[data-sec=learn]{--a1:#5b3fc8aa;--a2:#b69cf066;--a3:#1c2f8a77}
+body[data-sec=cmp]{--a1:#1c2f8aaa;--a2:#e0359a55;--a3:#3a1060}
+html[data-theme=light] body[data-sec]{--a1:#e9a6b277;--a2:#dcd4ee99;--a3:#dcede4aa}
+main{max-width:1180px;padding:104px 16px 24px}
+header{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(1120px,calc(100% - 24px));margin:0;border-radius:999px;padding:8px 14px;z-index:20;
+ background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05)),rgba(40,18,70,.42);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);
+ border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 1px rgba(233,166,178,.12),0 12px 40px rgba(0,0,0,.4),0 0 30px rgba(233,100,190,.15);transition:.35s;color:#fff}
+header.sc{padding:4px 12px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.03)),rgba(20,8,38,.62);top:6px}
+.hn{display:flex;gap:2px;margin-left:12px}.hn a{padding:7px 13px;border-radius:99px;cursor:pointer;font-size:13.5px;font-weight:600;color:#f4eefb;position:relative;transition:.25s}
+.hn a:hover{background:rgba(233,166,178,.22);box-shadow:0 0 18px rgba(233,150,200,.5)}.hn a.act{background:rgba(255,255,255,.16)}.hn a.act:after{content:"";position:absolute;left:30%;right:30%;bottom:2px;height:2px;border-radius:2px;background:linear-gradient(90deg,#E9A6B2,#4fd6a4)}
+@media(max-width:860px){.hn{display:none}.tag{display:none}}
+nav{background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04)),rgba(25,10,45,.7);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,.25);padding-top:84px;color:#f4eefb;box-shadow:0 0 60px rgba(0,0,0,.5)}
+nav a{color:#f4eefb;transition:.25s}nav a:hover{background:rgba(233,166,178,.18);box-shadow:0 0 16px rgba(233,150,200,.35)}nav a.act{background:linear-gradient(90deg,rgba(233,166,178,.35),transparent);color:#fff;border-left:3px solid #E9A6B2}
+.card{background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),var(--sh)}
+.card:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 14px 44px rgba(233,100,190,.22)}
+input,select{background:rgba(255,255,255,.09);color:var(--t);border:1px solid rgba(255,255,255,.22)}input::placeholder{color:var(--mu)}
+.tb,.q{background:rgba(255,255,255,.08);color:var(--t);border-color:rgba(255,255,255,.2)}.tb.on{background:linear-gradient(135deg,#c13cc0,#7b2cbf);border-color:transparent}
+button.p{background:linear-gradient(135deg,#d946a8,#7b2cbf);box-shadow:0 6px 22px rgba(217,70,168,.35)}h2{color:#f4c6e0}html[data-theme=light] h2{color:#7b2cbf}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif}h1{font-weight:700;font-size:clamp(46px,7.5vw,98px);line-height:.95;letter-spacing:-1px}
+#hero .hero{background:none;box-shadow:none;padding:0;grid-template-columns:1fr 1.15fr;min-height:calc(100vh - 150px);gap:0}
+#hero .hero .sm{color:var(--mu)}#hero .v3.big{height:min(640px,75vh);min-height:420px;background:none;overflow:visible;margin-right:-20px}
+.v3{background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.08),rgba(0,0,0,.25))}.v3 canvas{filter:saturate(1.15)}
+@media(max-width:700px){#hero .hero{grid-template-columns:1fr}#hero .v3.big{height:380px;margin:0}}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:10px 0 20px}.bento a{display:block;padding:18px;border-radius:22px;cursor:pointer;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(14px);transition:.3s;color:var(--t)}
+.bento a:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(233,100,190,.3)}.bento h3{margin:0 0 4px;font-size:22px}.bento p{margin:0;font-size:13px;color:var(--mu)}
+.b1{grid-column:span 3;grid-row:span 2;background:linear-gradient(145deg,rgba(15,107,74,.55),rgba(18,167,184,.2))!important}.b2{grid-column:span 3;background:linear-gradient(145deg,rgba(138,20,60,.5),rgba(235,163,111,.15))!important}.b3,.b4,.b5{grid-column:span 1.5}.bento a{grid-column:span 2}
+.b9{grid-column:span 4!important;background:linear-gradient(145deg,rgba(42,42,48,.7),rgba(122,21,48,.5))!important}.b11{background:linear-gradient(145deg,rgba(91,63,200,.5),rgba(182,156,240,.2))!important}
+@media(max-width:700px){.bento{grid-template-columns:1fr 1fr}.bento a,.b1,.b2,.b9{grid-column:span 2!important;grid-row:auto}}
+footer{color:var(--mu)}
+</style><link href="https://fonts.googleapis.com/css2?family=Michroma&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{overflow-x:hidden}body{font-family:Montserrat,Manrope,system-ui,sans-serif}h2,h3{font-family:Montserrat,system-ui,sans-serif;font-weight:700}
+body[data-sec=hero]{--a1:#4a0f8a88;--a2:#1a0a4a66;--a3:#0a0212;background-color:#000}
+header{background:rgba(28,28,32,.62);border:1px solid rgba(255,255,255,.18)}.hn{margin-right:auto}.tag{display:none}
+.hn a.act:after{background:#ff2d6f;left:35%;right:35%}.hn a:hover{background:rgba(255,45,111,.16);box-shadow:0 0 16px rgba(255,45,111,.4)}
+.cta,.cta2{display:inline-flex;align-items:center;gap:10px;padding:6px 6px 6px 18px;border-radius:99px;background:#3d3d42;color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;cursor:pointer;margin-right:8px;transition:.25s}
+.cta i,.cta2 i{font-style:normal;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#111}.cta:hover,.cta2:hover{background:#ff2d6f;box-shadow:0 0 20px rgba(255,45,111,.5)}
+@media(max-width:860px){.cta{display:none}}
+.land{width:100vw;margin-left:calc(50% - 50vw);margin-top:-104px;position:relative}
+.s1{position:relative;min-height:100vh;padding:130px 7vw 80px;display:flex;align-items:center}
+.blob{position:absolute!important;pointer-events:none!important;background:none!important;border-radius:0!important;margin:0!important;overflow:visible!important}
+#v-hero{right:-6vw;top:70px;width:64vw;height:80vh;z-index:2}.copy{position:relative;z-index:3;max-width:620px}
+.copy small,.abt small,.s3>small{letter-spacing:.45em;font-weight:700;font-size:12px;color:#fff}
+.disp{font-family:Michroma,'Orbitron',sans-serif;font-weight:400;font-size:clamp(34px,7.4vw,108px);line-height:1.05;letter-spacing:.01em;margin:.15em 0 .35em;color:#fff}
+.lead{color:#cfc6dd;max-width:520px;line-height:1.7;font-size:15px}
+.pill{display:flex;align-items:center;background:#3a3a3f;border-radius:99px;padding:5px 5px 5px 22px;gap:8px;max-width:520px;margin:18px 0 8px;border:1px solid rgba(255,255,255,.12)}
+.pill input{flex:1;background:transparent!important;border:0!important;outline:0;color:#fff;padding:10px 0;min-width:0}
+.pill button{width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:#111;font-size:18px;cursor:pointer;transition:.25s}.pill button:hover{background:#ff2d6f;color:#fff}
+.scrollc{position:absolute;left:50%;bottom:28px;width:78px;height:78px;transform:translateX(-50%);z-index:3;cursor:pointer}.rot{transform-origin:50px 50px;animation:rot 16s linear infinite}@keyframes rot{to{transform:rotate(360deg)}}
+.sidel{position:absolute;right:3vw;top:40%;display:grid;gap:8px;z-index:3}.sidel i{display:block;width:2px;height:22px;background:#fff6}.sidel i:first-child{background:#ff2d6f}
+.s2{position:relative;min-height:100vh;padding:90px 7vw;display:flex;justify-content:flex-end;align-items:center}
+#v-ab{left:-10vw;top:3vh;width:62vw;height:90vh;z-index:1}.out{position:absolute;top:14%;right:-1vw;font-family:Michroma,sans-serif;font-size:clamp(60px,13vw,190px);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.22);pointer-events:none}
+.abt{position:relative;z-index:3;width:min(520px,100%)}.abt h3{font-size:clamp(20px,2.4vw,30px);line-height:1.3;margin:.6em 0}.abt p{color:#cfc6dd;line-height:1.8;font-size:14px}.num{position:absolute;right:5vw;bottom:40px;color:#fff9;font-size:12px}
+.s3{position:relative;z-index:3;padding:40px 7vw 60px}.bento a{background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.16)}
+@media(max-width:800px){.s1{padding-top:110px;align-items:flex-start}#v-hero{width:120vw;right:-35vw;top:48vh;height:50vh}.s2{justify-content:center}#v-ab{width:110vw;left:-30vw;top:0;height:50vh;opacity:.7}.abt{margin-top:48vh}.scrollc{display:none}}
+.asst{max-width:900px;margin:0 auto}.asst h2{color:#e7fff3;font-size:34px;margin-bottom:4px}.asst .sub{color:#9fd8bd;font-size:14px}
+.apanel{background:linear-gradient(160deg,#18432f,#0d261d);border:1px solid #2f7a5a;border-radius:22px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.45);color:#e7fff3}
+.actx,.asend{display:flex;gap:10px;align-items:center}.actx{padding:6px 6px 6px 14px;border:1px solid #2f7a5a;border-radius:14px;background:#10281f}
+.asst input{flex:1;background:transparent!important;border:0!important;outline:0;color:#e7fff3;padding:10px 6px;min-width:0;font-size:14px}.asst input::placeholder{color:#8cc7aa}
+.asst button{cursor:pointer;border:0;font-weight:700}#cset{background:#7ff0b8;color:#0c2a1e;border-radius:10px;padding:10px 18px}
+.cmsgs{height:min(46vh,420px);overflow-y:auto;margin:12px 0;display:flex;flex-direction:column;gap:10px;padding:4px}.bub{max-width:88%;padding:12px 14px;border-radius:14px;font-size:14px;line-height:1.55}
+.bub.bot{background:#10281f;border:1px solid #2f7a5a;align-self:flex-start}.bub.me{background:#7ff0b8;color:#0c2a1e;align-self:flex-end}.bub .sm{color:#8cc7aa}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.chips button{background:#10281f;color:#e7fff3;border:1px solid #2f7a5a;border-radius:99px;padding:8px 14px;font-size:12.5px;font-weight:600}.chips button:hover{background:#1b4a36}
+.asend{border:1px solid #2f7a5a;border-radius:14px;background:#10281f;padding:6px 6px 6px 14px}#csend{width:42px;height:42px;border-radius:50%;background:#7ff0b8;color:#0c2a1e;font-size:16px}
+.blob .ld{display:none}
+</style><style>
+main{padding-top:70px}.land{margin-top:-70px}.s1{padding-top:90px}
+.fab{position:fixed;top:18px;left:18px;z-index:30;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:#fff;border:1px solid rgba(255,255,255,.42);
+ background:radial-gradient(circle at 28% 22%,rgba(255,255,255,.55),rgba(255,255,255,0) 42%),linear-gradient(135deg,rgba(255,255,255,.26),rgba(255,255,255,.05));
+ backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -10px 18px rgba(255,255,255,.06),0 12px 32px rgba(0,0,0,.45),0 0 24px rgba(200,110,255,.25);transition:.3s}
+.fab.f2{left:78px;width:42px;height:42px;top:22px}.fab:hover{transform:scale(1.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 12px 36px rgba(0,0,0,.5),0 0 34px rgba(255,90,170,.55)}
+nav{width:290px;padding:26px 16px;background:radial-gradient(circle at 20% 0%,rgba(255,255,255,.22),rgba(255,255,255,0) 40%),linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.03)),rgba(24,10,44,.55);
+ backdrop-filter:blur(34px) saturate(190%);-webkit-backdrop-filter:blur(34px) saturate(190%);border-right:1px solid rgba(255,255,255,.35);box-shadow:inset -1px 0 0 rgba(255,255,255,.12),0 0 80px rgba(0,0,0,.55)}
+.brand{font-family:Michroma,sans-serif;font-size:15px;letter-spacing:.08em;color:#fff;padding:4px 10px 18px;margin-bottom:8px;border-bottom:1px solid rgba(255,255,255,.18)}.brand small{display:block;font-family:Montserrat,sans-serif;font-size:10px;letter-spacing:.04em;color:#cfc6dd;margin-top:6px}
+nav a{padding:11px 14px;margin:3px 0;border-radius:14px;font-size:14px;font-weight:600;border:1px solid transparent}nav a:hover{background:linear-gradient(90deg,rgba(255,255,255,.16),rgba(255,255,255,.04));border-color:rgba(255,255,255,.2);box-shadow:0 0 18px rgba(255,90,170,.25)}
+nav a.act{background:linear-gradient(90deg,rgba(255,45,111,.3),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.28);border-left:3px solid #ff2d6f}
+.card{background:linear-gradient(120deg,rgba(255,255,255,.2),rgba(255,255,255,0) 38%),linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.02));backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.06),0 14px 44px rgba(0,0,0,.4)}
+.pill{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));backdrop-filter:blur(20px) saturate(170%);-webkit-backdrop-filter:blur(20px) saturate(170%);border:1px solid rgba(255,255,255,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 30px rgba(0,0,0,.35)}
+.bento a{background:linear-gradient(120deg,rgba(255,255,255,.2),rgba(255,255,255,0) 40%),linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.02));backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.tb{backdrop-filter:blur(14px);background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.28)}
+.cta2{background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.35)}
+nav{padding-top:84px}
+</style><style>.s1:before{content:"";position:absolute;right:-8vw;top:12vh;width:52vw;height:52vw;max-width:640px;max-height:640px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff7fc8aa,#7b2cbf88 45%,transparent 70%);filter:blur(30px);z-index:1;pointer-events:none}.s2:before{content:"";position:absolute;left:-10vw;top:10vh;width:46vw;height:46vw;border-radius:50%;background:radial-gradient(circle,#4fd6a477,transparent 65%);filter:blur(30px);pointer-events:none}</style></head><body>
+<button id="mb" class="fab" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h14" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></button><button id="th" class="fab f2" aria-label="Switch theme"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="#fff"/></svg></button><div id="printarea"></div>
+<div id="ov"></div>
+<nav id="nav"></nav>
+<main>
+<section id="hero" class="act"><div class="land">
+<div class="s1"><div id="v-hero" class="v3 blob pass" aria-label="Real-time 3D reflective abstract form"></div>
+ <div class="copy"><small>WE ARE</small><h1 class="disp">CHEMSAFE</h1><p class="lead">Chemistry, understood. Safety, reimagined. Explore hazards, prevent dangerous interactions and compare safer alternatives through one intelligent platform.</p>
+ <div class="pill"><input id="hq" placeholder="Search any chemical, formula or CAS number" autocomplete="off"><button id="hgo" aria-label="Explore">→</button></div>
+ <p class="sm">Live data from PubChem · every result shows its source.</p></div>
+ <a class="scrollc" data-go="home" aria-label="Scroll"><svg viewBox="0 0 100 100"><defs><path id="cp" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs><g class="rot"><text font-size="9" fill="#fff" letter-spacing="2.2"><textPath href="#cp">SCROLL TO EXPLORE • SCROLL TO EXPLORE •</textPath></text></g><text x="50" y="57" text-anchor="middle" font-size="22" fill="#fff">↓</text></svg></a>
+ <div class="sidel"><i></i><i></i><i></i></div></div>
+<div class="s2"><div id="v-ab" class="v3 blob pass" aria-label="Real-time 3D reflective abstract form"></div><div class="out">ABOUT</div>
+ <div class="abt"><small>WHO WE ARE</small><h3>Chemical intelligence for students, laboratories and safety teams.</h3>
+ <p>CHEMSAFE AI retrieves live PubChem data and shows its source beside every safety statement. It screens incompatibilities, plans storage, reads SDS files and never treats missing data as proof of safety.</p>
+ <a class="cta2" data-go="home">EXPLORE CHEMICALS <i>→</i></a></div><span class="num">01 — — —</span></div>
+<div class="s3"><small>WHAT WE DO</small><div class="bento">
+<a data-go="home" class="b1"><h3>Chemical Explorer</h3><p>Search by name, CAS, formula or CID. Live PubChem data, 3D glass molecules, GHS hazards, water reactivity, PPE, storage and first aid, each with its source.</p></a>
+<a data-go="compat" class="b2"><h3>Compatibility</h3><p>Screen pairs before they meet.</p></a>
+<a data-go="cmp"><h3>Compare</h3><p>Two chemicals, side by side.</p></a>
+<a data-go="green"><h3>Green Alternatives</h3><p>Hazard comparison for a candidate.</p></a>
+<a data-go="store"><h3>Storage Planner</h3><p>3D cabinet and groups.</p></a>
+<a data-go="emerg"><h3>Emergency Guide</h3><p>Evacuate first. Then look up the chemical.</p></a>
+<a data-go="sds"><h3>SDS Analyzer</h3><p>Upload a PDF, get 16 sections.</p></a>
+<a data-go="report"><h3>Reports</h3><p>Sourced PDF profile.</p></a>
+<a data-go="acc" class="b9"><h3>Learn from Industrial Accidents</h3><p>Open official CSB, HSE, OSHA and EPA investigation searches. Real reports only, nothing invented.</p></a>
+<a data-go="learn" class="b11"><h3>Learn</h3><p>Quizzes, flashcards, 3D models.</p></a>
+<a data-go="chat"><h3>AI Assistant</h3><p>Answers grounded in PubChem.</p></a></div>
+</div></div></section>
+<section id="home">
+ <div class="card"><h2>Welcome</h2><p>Search any chemical by name, CAS number, formula or PubChem CID. Data is fetched live from PubChem; every safety field shows its source and verification label.</p>
+ <div class="row"><input id="q" placeholder="e.g. acetone, 67-64-1, 180" /><button class="p" id="go">Search</button></div>
+ <div class="sm" id="rec"></div></div>
+ <div id="out"></div>
+</section>
+<section id="green"><div class="card"><h2>Green Alternatives</h2><p class="sm">Type the chemical you want to replace (matching chemicals appear as you type) and what you need it for. The system suggests lower-hazard substitutes that suit that purpose and ranks them with live PubChem GHS hazard data. Suggestions come from a curated list of well-known substitutions plus class-level rules (no open database maps substitutes for every chemical, so none is invented). Technical suitability must always be confirmed separately.</p>
+<div class="row"><input id="ga" list="gal" autocomplete="off" placeholder="Chemical to replace (e.g. dichloromethane, hexane, bleach)"><datalist id="gal"></datalist><input id="gu" list="gul" autocomplete="off" placeholder="Purpose (e.g. cleaning, extraction, descaling)"><datalist id="gul"><option value="Cleaning"><option value="Degreasing"><option value="Extraction"><option value="Chromatography"><option value="Reaction solvent"><option value="Paint / coating thinner"><option value="Descaling"><option value="Disinfection"><option value="Antifreeze / coolant"></datalist><button class="p" id="ggo">Find green alternatives</button></div>
+<div id="gprev" class="sm" style="margin-top:6px"></div></div><div id="gout"></div></section>
+<section id="store"><div class="card"><h2>Chemical Storage Planner</h2><p class="sm">Groups come from each chemical's GHS codes. Pair checks use the curated sample rules, so "none found" never means compatible.</p>
+<div class="row"><input id="si" placeholder="Add chemical to inventory"><button class="p" id="sadd">Add</button><button class="p" id="sclr">Clear</button></div></div><div id="sout"></div></section>
+<section id="emerg"><div class="card"><h2>Safety &amp; Emergency Guide</h2><p><b>For any spill, leak, fire, exposure or accidental mixing that is large, unknown, or causes symptoms: leave the area, warn others, and call your local emergency number or trained response team.</b> Do not attempt cleanup, neutralisation or rescue without training.</p>
+<div id="eg"></div></div>
+<div class="card"><h3>Chemical-specific guidance</h3><div class="row"><input id="ei" placeholder="Chemical name or CAS"><button class="p" id="ego">Look up</button></div></div><div id="eout"></div></section>
+<section id="sds"><div class="card"><h2>SDS Analyzer</h2><p class="sm">Upload a text-based PDF SDS. Text is extracted in your browser (nothing is uploaded). Scanned PDFs have no text and cannot be read.</p><input type="file" id="sf" accept="application/pdf"></div><div id="sdout"></div></section>
+<section id="report"><div class="card"><h2>Report Generator</h2><div class="row"><input id="ri" placeholder="Chemical"><button class="p" id="rgo">Generate &amp; print / save as PDF</button></div><p class="sm">Opens your browser's print dialog: choose "Save as PDF". Sourced text and AI-free summaries are kept separate.</p></div></section>
+<section id="acc"><div class="card"><h2>Chemical Accident Investigation</h2><p class="sm">Search a chemical, accident, place or year. Summaries and photographs load right here (Wikipedia/Wikimedia Commons); safety lessons are added for well-known cases. For official findings read the CSB/HSE report.</p><div id="acch"></div>
+<div class="row"><input id="ai" placeholder="Chemical, accident name, location or year"><button class="p" id="ago">Search</button></div></div><div id="aout"></div></section>
+<section id="learn"><div class="card"><h2>Learn Chemistry</h2><div class="row"><button class="p" onclick="quiz()">Start quiz</button><button class="p" onclick="flash()">Flashcards</button></div></div><div id="lout"></div></section>
+<section id="compat"><div class="card"><h2>Chemical Compatibility</h2>
+ <p class="sm">Type any number of chemicals (up to 10) separated by commas, e.g. <i>acetone, bleach, ammonia, vinegar, sodium hydroxide</i>. You get a pair-by-pair matrix, the reason for each result, where to store each one and a final recommendation. Safety screening only, <b>not</b> permission to mix.</p>
+ <div class="row"><input id="cl" placeholder="acetone, bleach, ammonia, hydrochloric acid, ethanol"><button class="p" id="cgo">Check</button></div></div><div id="cout"></div></section>
+<section id="cmp"><div class="card"><h2>Compare Chemicals</h2>
+ <div class="row"><input id="pa" placeholder="Chemical A"><input id="pb" placeholder="Chemical B"><button class="p" id="pgo">Compare</button></div></div><div id="pout"></div></section>
+<section id="chat"><div class="asst"><h2>AI Assistant</h2><p class="sub">Ask about hazards, PPE, storage and handling. Answers are assembled from PubChem GHS records and sections, with sources shown.</p>
+<div class="apanel"><div class="actx"><svg class="ic" width="18" height="18" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5" fill="none" stroke="#9fd8bd" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="#9fd8bd" stroke-width="1.6" stroke-linecap="round"/></svg><input id="cx" placeholder="Chemical in context (name or CAS)" autocomplete="off"><button id="cset">Set</button></div>
+<div id="cmsgs" class="cmsgs"><div class="bub bot">Hi! Name a chemical in your question, or set one above. Ask about hazards, PPE, storage, first aid, spills, fire, disposal, or “can I mix acetone with bleach?”.</div></div>
+<div class="chips"><button>What are the hazards of this chemical?</button><button>What PPE should I use?</button><button>How should I store this chemical?</button><button>What precautions should I take when handling it?</button></div>
+<div class="asend"><input id="cm" placeholder='Ask a safety question, e.g. "Can I mix bleach and ammonia?"' autocomplete="off"><button id="csend" aria-label="Send">➤</button></div></div></div></section>
+<section id="scan"><div class="card"><h2>Scan &amp; Ask: photo + voice in your language</h2>
+<p class="sm">1) Pick your language. 2) Take or upload a photo of the product label. 3) Speak or type your question. The AI answers in your language and can read the answer aloud. Chemical facts from PubChem are shown separately below the AI text.</p>
+<div class="row"><select id="sl" aria-label="Language"></select></div>
+<div class="row" style="margin-top:8px"><input type="file" id="sf" accept="image/*" capture="environment"></div>
+
+<img id="sp" alt="Label preview" style="display:none;max-width:100%;max-height:220px;object-fit:contain;margin:8px auto;border-radius:12px">
+<div class="row" style="margin-top:8px">
+  <button class="p" type="button" id="openCamera">📷 Take Photo</button>
+  <button class="p" type="button" id="capturePhoto" style="display:none">Capture Photo</button>
+  <button class="p" type="button" id="closeCamera" style="display:none">Close Camera</button>
+</div>
+<video id="cameraPreview" autoplay playsinline style="display:none;width:100%;max-height:300px;border-radius:12px"></video>
+<canvas id="cameraCanvas" style="display:none"></canvas>
+<div class="row" style="margin-top:8px"><input id="sq" placeholder="Your question (speak with the mic or type), e.g. can I store this near fertilizer?"><button class="p" id="smic" type="button">🎤 Speak</button></div>
+<div class="row" style="margin-top:8px"><button class="p" id="sask" type="button">Ask</button><button class="p" id="sspeak" type="button" style="display:none">🔊 Read aloud</button><button class="p" id="sstop" type="button" style="display:none">⏹ Stop</button></div>
+<details style="margin-top:8px"><summary class="sm">Backend settings</summary><input id="sapi" value="" placeholder="Leave empty on the live site" aria-label="Backend URL"><p class="sm">Leave empty on the live website. Only for local testing: open the file directly and the address http://localhost:5000 is used automatically. The AI key stays on the server, never in this page.</p></details>
+<p class="sm"><b>Safety:</b> AI can misread labels. Always follow the printed label and your local agriculture or safety officer. This tool never gives spray doses or mixing ratios. If someone is poisoned or exposed, get medical help or call your local poison helpline right away.</p></div>
+<div id="sout"></div></section>
+</main>
+<footer class="sm">Decision-support only. Always consult the supplier SDS and qualified professionals.</footer>
+<script>
+const PC="https://pubchem.ncbi.nlm.nih.gov/rest/pug", PV="https://pubchem.ncbi.nlm.nih.gov/rest/pug_view";
+const $=s=>document.querySelector(s), esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pages=[["hero","Home Dashboard"],["home","Chemical Explorer"],["compat","Chemical Compatibility"],["cmp","Chemical Comparison"],["green","Green Alternatives"],["store","Storage Planner"],["emerg","Safety & Emergency Guide"],["sds","SDS Analyzer"],["report","Report Generator"],["acc","Accident Investigation"],["learn","Learn Chemistry"],["scan","Scan & Ask (Voice)"],["chat","AI Safety Assistant"]];
+$("#nav").innerHTML='<div class="brand">CHEMSAFE AI<small>Understand Chemicals. Prevent Risks. Choose Greener.</small></div>'+pages.map(p=>`<a data-p="${p[0]}">${p[1]}</a>`).join("");
+function show(id){document.querySelectorAll("section").forEach(s=>s.classList.toggle("act",s.id==id));document.querySelectorAll("nav a[data-p]").forEach(a=>a.classList.toggle("act",a.dataset.p==id));tog(false)}
+function tog(o){$("#nav").classList.toggle("open",o);$("#ov").classList.toggle("show",o)}
+$("#mb").onclick=()=>tog(!$("#nav").classList.contains("open"));$("#ov").onclick=()=>tog(false);
+$("#nav").onclick=e=>{if(e.target.dataset.p)show(e.target.dataset.p)};show("hero");
+
+async function j(u){const r=await fetch(u);if(!r.ok)throw new Error(r.status==404?"Not found":"Source error "+r.status);return r.json()}
+async function resolve(q){q=q.trim();if(!q)throw new Error("Enter a chemical");
+ if(/^\d+$/.test(q))return +q;
+ const d=await j(`${PC}/compound/name/${encodeURIComponent(q)}/cids/JSON`);return d.IdentifierList.CID[0]}
+function walk(sec,out=[]){(sec||[]).forEach(s=>{(s.Information||[]).forEach(i=>out.push(i));walk(s.Section,out)});return out}
+async function fetchChem(q){
+ const cid=await resolve(q);const t=new Date().toISOString();
+ const [p,s]=await Promise.all([j(`${PC}/compound/cid/${cid}/property/Title,MolecularFormula,MolecularWeight,IUPACName/JSON`),j(`${PC}/compound/cid/${cid}/synonyms/JSON`)]);
+ const pr=p.PropertyTable.Properties[0],syn=s.InformationList.Information[0].Synonym||[];
+ const cas=syn.filter(x=>/^\d{2,7}-\d{2}-\d$/.test(x)).slice(0,3);
+ let ghs={pics:[],signal:[],H:[],P:[],found:false};
+ try{const g=await j(`${PV}/data/compound/${cid}/JSON?heading=GHS+Classification`);
+  const info=walk(g.Record.Section);ghs.found=info.length>0;const seen=new Set();
+  info.forEach(i=>{const sm=(i.Value?.StringWithMarkup||[]);
+   if(i.Name=="Pictogram(s)")sm.forEach(x=>(x.Markup||[]).forEach(m=>{if(m.URL&&!seen.has(m.URL)){seen.add(m.URL);ghs.pics.push({u:m.URL,l:m.Extra})}}));
+   if(i.Name=="Signal")sm.forEach(x=>ghs.signal.push(x.String));
+   if(i.Name=="GHS Hazard Statements")sm.forEach(x=>{const m=x.String.match(/^(H\d{3}|EUH\d{3})/);if(m&&!ghs.H.find(h=>h.c==m[1]))ghs.H.push({c:m[1],t:x.String.replace(/\s*\[.*$/,"")})});
+   if(i.Name=="Precautionary Statement Codes")sm.forEach(x=>ghs.P.push(...x.String.split(/[,\s]+/).filter(c=>/^P\d{3}/.test(c.replace("+","")))))})}catch(e){}
+ ghs.P=[...new Set(ghs.P)];
+ return{cid,pr,syn:syn.slice(0,12),cas,ghs,t,url:`https://pubchem.ncbi.nlm.nih.gov/compound/${cid}`}}
+const cat=(H,re)=>H.filter(h=>re.test(h.c));
+function water(H){const w=H.filter(h=>/^(H260|H261|EUH014|EUH029)$/.test(h.c));
+ if(w.length)return`<div class="card warn"><h3>Water Reactivity <span class="lab d">Reacts dangerously — per GHS codes</span></h3>${w.map(h=>`<div>${esc(h.c)}: ${esc(h.t)}</div>`).join("")}</div>`;
+ return`<div class="card info"><h3>Water Reactivity <span class="lab w">Insufficient information</span></h3><p>No water-reactivity GHS code (H260/H261/EUH014/EUH029) found in the retrieved PubChem classification. This does <b>not</b> mean the chemical is safe with water — check SDS Section 10.</p></div>`}
+function render(c){const {pr,ghs}=c,H=ghs.H;
+ const grp=(n,re)=>{const l=cat(H,re);return`<h3>${n}</h3>`+(l.length?l.map(h=>`<div>• <b>${h.c}</b> ${esc(h.t.replace(/^\S+\s*(\(\d+(\.\d+)?%\))?:?\s*/,""))}</div>`).join(""):`<div class="sm">None listed in PubChem for this category.</div>`)};
+ const basic=`<div class="card"><h2>${esc(pr.Title)}</h2>
+ <table class="tbl"><tr><td>Formula</td><td>${esc(pr.MolecularFormula)}</td></tr><tr><td>Molecular weight</td><td>${esc(pr.MolecularWeight)} g/mol</td></tr>
+ <tr><td>IUPAC name</td><td>${esc(pr.IUPACName||"n/a")}</td></tr><tr><td>PubChem CID</td><td>${c.cid}</td></tr>
+ <tr><td>CAS</td><td>${c.cas.length?esc(c.cas.join(", "))+'<span class="lab w">Single source (PubChem synonyms)</span>':"Not found"}</td></tr>
+ <tr><td>Synonyms</td><td class="sm">${c.syn.map(esc).join("; ")}</td></tr></table>
+ <button class="p" onclick="addRec(${c.cid},'${esc(pr.Title).replace(/'/g,"")}')">Save</button></div>`;
+ cur=c;
+ return basic+`<div id="v-mol" class="v3 sm3"></div><div class="tabs" id="tabs">${TABS.map(t=>`<button class="tb" data-t="${t[0]}">${t[1]}</button>`).join("")}</div><div id="panel"></div>`}
+const TABS=[["haz","Hazards (GHS)"],["water","Water Reactivity"],["ppe","PPE & Handling"],["store","Storage"],["aid","First Aid"],["spill","Spill Response"],["env","Environmental"],["src","Sources"]];
+const HEADS={water:["Air and Water Reactions","Stability and Reactivity"],ppe:["Personal Protective Equipment (PPE)","Exposure Control and Personal Protection"],store:["Safe Storage","Storage Conditions","Handling and Storage"],aid:["First Aid Measures"],spill:["Accidental Release Measures","Spillage Disposal"],env:["Ecological Information","Environmental Fate/Exposure Summary"]};
+let cur=null;const cache={};
+async function heading(cid,h){try{const g=await j(`${PV}/data/compound/${cid}/JSON?heading=${encodeURIComponent(h)}`);const refs={};(g.Record.Reference||[]).forEach(r=>refs[r.ReferenceNumber]={n:r.SourceName,u:r.URL});const out=[];walk(g.Record.Section).forEach(i=>(i.Value?.StringWithMarkup||[]).forEach(x=>{if(x.String&&x.String.length>2)out.push({t:x.String,r:refs[i.ReferenceNumber]})}));return out}catch(e){return null}}
+async function textPanel(key,title,extra){const c=cur;const k=c.cid+key;
+ if(!cache[k]){const res=await Promise.all(HEADS[key].map(h=>heading(c.cid,h)));const seen=new Set(),items=[];
+  res.forEach(r=>(r||[]).forEach(x=>{if(!seen.has(x.t)){seen.add(x.t);items.push(x)}}));cache[k]={items,reached:res.some(r=>r!==null)}}
+ const {items,reached}=cache[k];
+ return`<div class="card ${items.length?'':'info'}"><h3>${title} ${items.length?'<span class="lab">Single-source excerpts (PubChem, as reported)</span>':'<span class="lab w">Insufficient information</span>'}</h3>${extra||""}
+ ${items.length?items.slice(0,8).map(x=>`<p>• ${esc(x.t.length>450?x.t.slice(0,450)+"…":x.t)}<br><span class="sm">Source: ${x.r?(x.r.u?`<a href="${esc(x.r.u)}" target="_blank" rel="noopener">${esc(x.r.n)}</a>`:esc(x.r.n)):"PubChem (source not stated)"}</span></p>`).join(""):`<p>${reached?"PubChem returned no usable text for this section":"This section was not available from PubChem for this chemical"}. Nothing is assumed — consult the supplier SDS.</p>`}
+ <p class="sm">Excerpts are shown as reported, not rewritten. They do not replace the SDS or qualified advice.</p></div>`}
+function hazPanel(c){const {ghs}=c,H=ghs.H;
+ const grp=(n,re)=>{const l=cat(H,re);return`<h3>${n}</h3>`+(l.length?l.map(h=>`<div>• <b>${h.c}</b> ${esc(h.t.replace(/^\S+\s*(\(\d+(\.\d+)?%\))?:?\s*/,""))}</div>`).join(""):`<div class="sm">None listed in PubChem for this category.</div>`)};
+ return`<div class="card ${H.length?'warn':'info'}"><h2>GHS Classification ${ghs.found?'<span class="lab">PubChem GHS aggregate</span>':'<span class="lab w">No GHS record in PubChem</span>'}</h2>
+ ${ghs.signal.length?`<p>Signal word: <b>${esc([...new Set(ghs.signal)].join(" / "))}</b></p>`:""}
+ <div>${ghs.pics.map(p=>`<span class="pic"><img src="${esc(p.u)}" alt="">${esc(p.l)}</span>`).join("")||'<span class="sm">No pictograms retrieved</span>'}</div>
+ ${grp("Health hazards",/^H3\d\d$/)}${grp("Fire / physical hazards",/^H2\d\d$/)}${grp("Environmental hazards",/^H4\d\d$/)}
+ ${ghs.P.length?`<h3>Precautionary statement codes</h3><div class="sm">${ghs.P.join(", ")}</div>`:""}
+ <p class="sm">Inherent hazard classification, not workplace risk. Risk depends on quantity, concentration, exposure route, duration and controls. Classifications can vary between notifiers; consult the supplier SDS.</p></div>`}
+async function openTab(t){document.querySelectorAll("#tabs .tb").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
+ const p=$("#panel");p.innerHTML='<div class="card">Loading…</div>';const c=cur;
+ let h="";
+ if(t=="haz")h=hazPanel(c);
+ else if(t=="water")h=water(c.ghs.H)+await textPanel("water","Reported air/water reactivity");
+ else if(t=="ppe")h=await textPanel("ppe","PPE & safe handling");
+ else if(t=="store")h=await textPanel("store","Storage requirements");
+ else if(t=="aid")h=await textPanel("aid","First aid (seek medical help / call emergency services)");
+ else if(t=="spill")h=await textPanel("spill","Accidental release","<p class='sm'>Major or uncontrolled releases: evacuate and call emergency services. Untrained people should not attempt cleanup or neutralisation.</p>");
+ else if(t=="env")h=await textPanel("env","Environmental information");
+ else h=`<div class="card ok"><h3>Source</h3><div class="sm">PubChem (NCBI/NLM) — PUG REST &amp; PUG View, live · identifier matched: CID ${c.cid} · retrieved ${c.t}<br><a href="${c.url}" target="_blank" rel="noopener">${c.url}</a></div></div>`;
+ if(cur===c)p.innerHTML=h}
+document.addEventListener("click",e=>{const b=e.target.closest("#tabs .tb");if(b)openTab(b.dataset.t)});
+let recs=[];try{recs=JSON.parse(localStorage.getItem("recs")||"[]")}catch(e){}
+function addRec(cid,n){if(!recs.find(r=>r.cid==cid))recs.unshift({cid,n});recs=recs.slice(0,8);try{localStorage.setItem("recs",JSON.stringify(recs))}catch(e){}drawRec()}
+function drawRec(){$("#rec").innerHTML=recs.length?"Saved: "+recs.map(r=>`<span class="chip" onclick="$('#q').value='${r.cid}';search()">${esc(r.n)}</span>`).join(""):"Try: acetone, methanol, sodium hydroxide, 7647-01-0"}
+async function search(){$("#out").innerHTML='<div class="card">Loading from PubChem…</div>';
+ try{const c=await fetchChem($("#q").value);$("#out").innerHTML=render(c);openTab("haz");mount("v-mol",molB(c.cid),{z:9})}catch(e){$("#out").innerHTML=`<div class="card warn">${esc(e.message)}. Check the spelling or identifier, or try again later (PubChem may be rate-limiting).</div>`}}
+$("#go").onclick=search;$("#q").onkeydown=e=>{if(e.key=="Enter")search()};drawRec();
+
+// Compatibility: SAMPLE curated rules keyed by PubChem CID (clearly labelled in UI)
+const N={23665760:"sodium hypochlorite",313:"hydrochloric acid",222:"ammonia",944:"nitric acid",180:"acetone",784:"hydrogen peroxide",1118:"sulfuric acid",14798:"sodium hydroxide"};
+const R=[[[23665760,313],"Can release toxic chlorine gas","Never store or mix; segregate oxidisers from acids."],
+[[23665760,222],"Can form toxic chloramine vapours","Never store or mix; keep hypochlorite away from ammonia products."],
+[[944,180],"Strong oxidiser with organic solvent: potentially violent or explosive reaction","Segregate oxidising acids from flammable organics."],
+[[784,180],"Can form unstable organic peroxides","Segregate peroxides from organic solvents."],
+[[1118,14798],"Violent exothermic neutralisation; heat and spattering","Segregate acids from bases."],
+[[313,14798],"Violent exothermic neutralisation; heat and spattering","Segregate acids from bases."]];
+$("#cgo").onclick=async()=>{const o=$("#cout");o.innerHTML='<div class="card">Resolving…</div>';
+ try{const [a,b]=await Promise.all([fetchChem($("#ca").value),fetchChem($("#cb").value)]);
+  const hit=R.find(r=>r[0].includes(a.cid)&&r[0].includes(b.cid)&&a.cid!=b.cid);
+  const head=`<div class="card"><b>${esc(a.pr.Title)}</b> (CID ${a.cid}) + <b>${esc(b.pr.Title)}</b> (CID ${b.cid})</div>`;
+  const known=[a.cid,b.cid].every(x=>N[x]);
+  o.innerHTML=head+'<div id="v-cp" class="v3"></div><p class="sm">Illustrative 3D vessels only. This is not a simulation of the reaction.</p>'+(hit?`<div class="card warn"><h3>Known incompatibility identified</h3><p>${hit[1]}</p><p><b>Prevention:</b> ${hit[2]}</p><div class="sm">Source: manually curated sample rule — verify in NOAA CAMEO Chemicals and supplier SDS Section 10.</div></div>`
+   :`<div class="card info"><h3>${known?"No incompatibility identified within the available curated data":"Insufficient information to establish compatibility"}</h3><p>This is <b>not</b> confirmation that these chemicals are safe to mix or store together. Check SDS Section 10 and a recognised compatibility chart.</p></div>`);mount("v-cp",cpB(hit?"known":(known?"none":"unknown")))}
+ catch(e){o.innerHTML=`<div class="card warn">${esc(e.message)}</div>`}};
+
+// Compare
+$("#pgo").onclick=async()=>{const o=$("#pout");o.innerHTML='<div class="card">Loading…</div>';
+ try{const [a,b]=await Promise.all([fetchChem($("#pa").value),fetchChem($("#pb").value)]);
+  const row=(l,f)=>`<tr><td>${l}</td><td>${f(a)}</td><td>${f(b)}</td></tr>`,n=(c,re)=>cat(c.ghs.H,re).length;
+  const bars=(l,re)=>{const m=Math.max(n(a,re),n(b,re),1);return`<tr><td>${l}</td><td><div class="bar" style="width:${n(a,re)/m*100}%"></div>${n(a,re)}</td><td><div class="bar" style="width:${n(b,re)/m*100}%"></div>${n(b,re)}</td></tr>`};
+  o.innerHTML=`<div class="row"><div id="v-ca" class="v3 sm3" style="flex:1;min-width:150px"></div><div id="v-cb" class="v3 sm3" style="flex:1;min-width:150px"></div></div><div class="card"><table class="tbl"><tr><th></th><th>${esc(a.pr.Title)}</th><th>${esc(b.pr.Title)}</th></tr>
+  ${row("Formula",c=>esc(c.pr.MolecularFormula))}${row("Mol. weight",c=>esc(c.pr.MolecularWeight))}${row("CID",c=>c.cid)}
+  ${row("Signal word",c=>esc([...new Set(c.ghs.signal)].join("/")||"n/a"))}
+  ${bars("# health hazard statements",/^H3\d\d$/)}${bars("# fire/physical statements",/^H2\d\d$/)}${bars("# environmental statements",/^H4\d\d$/)}
+  ${row("Water-reactive code",c=>c.ghs.H.some(h=>/^(H260|H261|EUH014)$/.test(h.c))?"Yes (GHS)":"Not reported")}</table>
+  <p class="sm">Statement counts compare the number of GHS statements, not severity, and are not an official score. Neither chemical is "safer" in general; suitability depends on the application and controls. Source: PubChem, retrieved ${a.t}.</p></div>`;mount("v-ca",molB(a.cid));mount("v-cb",molB(b.cid))}
+ catch(e){o.innerHTML=`<div class="card warn">${esc(e.message)}</div>`}};
+
+// ---- Stage 2 ----
+$("#th").onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme=="light"?"":"light"};
+const go=()=>{$("#q").value=$("#hq").value;show("home");search()};$("#hgo").onclick=go;$("#hq").onkeydown=e=>{if(e.key=="Enter")go()};
+const err=(o,e)=>o.innerHTML=`<div class="card warn">${esc(e.message)}</div>`;
+// Green alternatives
+$("#ggo").onclick=async()=>{const o=$("#gout");o.innerHTML='<div class="card">Loading…</div>';
+ try{const [a,b]=await Promise.all([fetchChem($("#ga").value),fetchChem($("#gb").value)]);const n=(c,re)=>cat(c.ghs.H,re).length;
+ const r=(l,re)=>`<tr><td>${l}</td><td>${n(a,re)}</td><td>${n(b,re)}</td></tr>`;
+ o.innerHTML=`<div class="card"><h3>${esc(a.pr.Title)} → ${esc(b.pr.Title)} <span class="lab">for: ${esc($("#gu").value||"use not stated")}</span></h3><table class="tbl"><tr><th>GHS statements</th><th>Original</th><th>Candidate</th></tr>${r("Health",/^H3\d\d$/)}${r("Fire/physical",/^H2\d\d$/)}${r("Environmental",/^H4\d\d$/)}</table>
+ <p class="sm">Fewer statements does not make a substitute better: performance, severity, persistence, disposal and lifecycle matter. Hazard data: PubChem, ${a.t}. Not a recommendation.</p></div>`}catch(e){err(o,e)}};
+// Storage planner
+let inv=[];const GR=[["Flammable",/^H22[4-6]$/],["Oxidiser",/^H27[0-2]$/],["Water-reactive",/^(H260|H261|EUH014)$/],["Corrosive",/^(H290|H314)$/],["Acutely toxic",/^H(300|301|310|311|330|331)$/]];
+function drawStore(){const o=$("#sout");if(!inv.length){o.innerHTML='<div class="card sm">Inventory is empty. Add a chemical above.</div>';return}
+ const z=GR.map(([n,re])=>[n,inv.filter(c=>c.ghs.H.some(h=>re.test(h.c)))]).filter(x=>x[1].length);
+ const un=inv.filter(c=>!c.ghs.H.length);let pairs="";
+ for(let i=0;i<inv.length;i++)for(let k=i+1;k<inv.length;k++){const a=inv[i],b=inv[k],h=R.find(r=>r[0].includes(a.cid)&&r[0].includes(b.cid));
+  pairs+=`<tr><td>${esc(a.pr.Title)} + ${esc(b.pr.Title)}</td><td>${h?`<span class="lab d">Known incompatibility</span> ${h[1]}`:'<span class="lab w">No rule in curated sample — not proof of compatibility</span>'}</td></tr>`}
+ o.innerHTML=`<div id="v-st" class="v3"></div><div class="card"><h3>Storage groups (from GHS codes)</h3>${z.map(([n,l])=>`<div class="zone"><b>${n}</b><br>${l.map(c=>esc(c.pr.Title)).join(", ")}</div>`).join("")||'<p class="sm">No grouping hazards found in retrieved data.</p>'}
+ ${un.length?`<p><span class="lab w">Insufficient information</span> ${un.map(c=>esc(c.pr.Title)).join(", ")}: no GHS data retrieved, do not assign a group. Use the SDS.</p>`:""}
+ <p class="sm">A chemical may sit in several groups; a chemical in a group still needs its own SDS Section 7 check. Keep different groups physically separated.</p></div>
+ <div class="card"><h3>Pair screening</h3><div style="overflow-x:auto"><table class="tbl">${pairs||"<tr><td>Add two or more chemicals.</td></tr>"}</table></div></div>
+ <div class="card"><h3>Checklist</h3><p>☐ Read SDS Section 7 &amp; 10 for each ☐ Separate groups above ☐ Label containers ☐ Keep water-reactive items dry ☐ Keep flammables away from ignition sources ☐ Review inventory regularly</p>
+ <button class="p" onclick="inv=[];drawStore()">Clear</button></div>`;mount("v-st",stB(z,inv),{z:11})}
+$("#sadd").onclick=async()=>{try{const c=await fetchChem($("#si").value);if(!inv.find(x=>x.cid==c.cid))inv.push(c);$("#si").value="";drawStore()}catch(e){err($("#sout"),e)}};$("#sclr").onclick=()=>{inv=[];drawStore()};drawStore();
+// Emergency
+const EG=[["Spill","Leave the area if large, unknown or vapours present. Alert others. Call emergency services/response team. Avoid touching or smelling it."],["Exposure","Move to fresh air; remove contaminated clothing; flush skin/eyes per the SDS; get medical help and bring the SDS."],["Fire","Activate the alarm and evacuate. Only trained people use extinguishers, and the wrong agent can worsen some chemical fires."],["Leak / gas","Evacuate upwind or crosswind; do not switch electrics on/off; call emergency services."],["Accidental mixing","If gas, heat or fumes appear, leave immediately and call for help. Do not try to neutralise."],["Storage incident","Evacuate if containers are leaking, swelling or reacting; tell responders what is stored."]];
+$("#eg").innerHTML=EG.map(g=>`<p><b>${g[0]}:</b> ${g[1]}</p>`).join("")+'<p class="sm">General priorities, not chemical-specific. Never assume a general step suits a particular chemical.</p>';
+$("#ego").onclick=async()=>{const o=$("#eout");o.innerHTML='<div class="card">Loading…</div>';try{cur=await fetchChem($("#ei").value);
+ o.innerHTML=`<div class="card"><b>${esc(cur.pr.Title)}</b> (CID ${cur.cid})</div>`+hazPanel(cur)+await textPanel("aid","First aid")+await textPanel("spill","Accidental release")}catch(e){err(o,e)}};
+// SDS analyzer
+let pdfjs;function loadPdf(){return pdfjs?Promise.resolve(pdfjs):new Promise((res,rej)=>{const t=document.createElement("script");t.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";t.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";pdfjs=pdfjsLib;res(pdfjs)};t.onerror=()=>rej(new Error("Could not load PDF reader (offline?)"));document.head.appendChild(t)})}
+const SN=["Identification","Hazard identification","Composition","First-aid measures","Firefighting measures","Accidental release measures","Handling and storage","Exposure controls / PPE","Physical and chemical properties","Stability and reactivity","Toxicological information","Ecological information","Disposal considerations","Transport information","Regulatory information","Other information"];
+$("#sf").onchange=async e=>{const f=e.target.files[0],o=$("#sdout");if(!f)return;if(f.type!="application/pdf"||f.size>15e6){o.innerHTML='<div class="card warn">Please choose a PDF under 15 MB.</div>';return}
+ o.innerHTML='<div class="card">Reading…</div>';try{const lib=await loadPdf(),d=await lib.getDocument({data:await f.arrayBuffer()}).promise;let txt="";
+ for(let i=1;i<=d.numPages;i++){const p=await d.getPage(i),c=await p.getTextContent();txt+=c.items.map(x=>x.str).join(" ")+"\n"}
+ if(txt.trim().length<200){o.innerHTML='<div class="card info"><b>No readable text.</b> This may be a scanned PDF; OCR is not implemented. Nothing was extracted.</div>';return}
+ const re=/(?:SECTION|Section)\s*(\d{1,2})\s*[:.\-–]?/g,pos=[];let m;while((m=re.exec(txt))){const n=+m[1];if(n>=1&&n<=16&&!pos.find(p=>p.n==n))pos.push({n,i:m.index,e:m.index+m[0].length})}
+ pos.sort((a,b)=>a.i-b.i);const sec={};pos.forEach((p,k)=>sec[p.n]=txt.slice(p.e,k+1<pos.length?pos[k+1].i:txt.length).trim());
+ const hs=[...new Set(txt.match(/\bH\d{3}\b/g)||[])],ps=[...new Set(txt.match(/\bP\d{3}\b/g)||[])];
+ o.innerHTML=`<div class="card"><h3>${esc(f.name)}</h3><p>${Object.keys(sec).length}/16 sections detected. H-codes found: ${hs.join(", ")||"none"}; P-codes: ${ps.length}. <span class="lab">Extracted from your document</span></p></div>`+
+ SN.map((n,i)=>sec[i+1]?`<div class="card"><h3>${i+1}. ${n}</h3><p class="sm">${esc(sec[i+1].slice(0,700))}${sec[i+1].length>700?"…":""}</p></div>`:`<div class="card info"><b>${i+1}. ${n}</b> <span class="lab w">Missing / not detected</span></div>`).join("")+'<div class="card sm">Section splitting is automatic text matching and can be wrong. Verify against the original document.</div>'}catch(e){err(o,e)}};
+// Report
+$("#rgo").onclick=async()=>{const o=$("#printarea");try{const c=await fetchChem($("#ri").value);cur=c;const sc={};for(const k of["ppe","store","aid","spill","env"]){await textPanel(k,"");sc[k]=cache[c.cid+k].items.slice(0,5)}
+ const T={ppe:"PPE & handling",store:"Storage",aid:"First aid",spill:"Accidental release",env:"Environmental"};
+ o.innerHTML=`<h1> CHEMSAFE AI — Chemical Safety Profile</h1><p>${esc(c.pr.Title)} · generated ${new Date().toLocaleString()}</p><h2>Identification</h2><p>Formula ${esc(c.pr.MolecularFormula)}; MW ${esc(c.pr.MolecularWeight)}; CID ${c.cid}; CAS ${esc(c.cas.join(", ")||"not found")}</p>
+ <h2>GHS classification (PubChem aggregate)</h2><p>Signal: ${esc([...new Set(c.ghs.signal)].join("/")||"n/a")}</p><ul>${c.ghs.H.map(h=>`<li>${esc(h.t)}</li>`).join("")||"<li>None retrieved</li>"}</ul>
+ ${Object.keys(T).map(k=>`<h2>${T[k]}</h2>${sc[k].length?`<ul>${sc[k].map(x=>`<li>${esc(x.t.slice(0,400))} <i>(${esc(x.r?.n||"PubChem")})</i></li>`).join("")}</ul>`:"<p>Insufficient information in retrieved sources.</p>"}`).join("")}
+ <h2>Sources &amp; limitations</h2><p>PubChem ${c.url}, retrieved ${c.t}. All text above is sourced, no AI-generated content. Hazard classification is not workplace risk. Does not replace the supplier SDS, regulations or qualified professionals.</p>`;setTimeout(()=>print(),200)}catch(e){alert(e.message)}};
+// Accident search (link-out)
+$("#ago").onclick=()=>{const q=encodeURIComponent($("#ai").value.trim());if(!q){$("#aout").innerHTML='<div class="card warn">Enter a search term.</div>';return}
+ const S=[["US Chemical Safety Board","csb.gov"],["HSE (UK)","hse.gov.uk"],["OSHA","osha.gov"],["US EPA","epa.gov"]];
+ $("#aout").innerHTML='<div class="card"><h3>Open official-source searches</h3>'+S.map(s=>`<p><a href="https://www.google.com/search?q=${q}+site:${s[1]}" target="_blank" rel="noopener">${s[0]} results for “${esc($("#ai").value)}”</a></p>`).join("")+'<p class="sm">External searches, not integrated data. Findings, causes and figures must be taken from the original reports.</p></div>'};
+// Learn
+const QZ=[["Which pictogram signals a flammable substance?",["Flame","Exclamation mark","Gas cylinder"],0,"The flame pictogram marks flammable materials."],["Which pictogram signals aquatic toxicity?",["Skull and crossbones","Environment (dead tree and fish)","Corrosion"],1,"The environment pictogram is used for aquatic hazards."],["Missing compatibility data means the chemicals are…",["Safe together","Unknown: check SDS Section 10","Always compatible"],1,"No data is not proof of safety."],["Where does an SDS list storage advice?",["Section 7","Section 2","Section 14"],0,"Section 7 covers handling and storage; Section 10 covers reactivity."],["A large unknown spill: first priority?",["Neutralise it","Evacuate and call emergency services","Mop it"],1,"Untrained people should not clean up or neutralise."]];
+function quiz(){let i=0,sc=0;const o=$("#lout");(function q(){if(i>=QZ.length){o.innerHTML=`<div class="card"><h3>Score: ${sc}/${QZ.length}</h3></div>`;return}
+ const [t,op,a,ex]=QZ[i];o.innerHTML=`<div class="card"><p class="sm">Question ${i+1}/${QZ.length}</p><h3>${t}</h3>${op.map((x,k)=>`<button class="q" data-k="${k}">${x}</button>`).join("")}<p id="ex"></p></div>`;
+ o.querySelectorAll(".q").forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k==a)sc++;o.querySelectorAll(".q").forEach(x=>{x.disabled=true;if(+x.dataset.k==a)x.classList.add("right")});if(k!=a)b.classList.add("bad");$("#ex").innerHTML=ex+' <button class="p" id="nx">Next</button>';$("#nx").onclick=()=>{i++;q()}})})()}
+const FC=[["Flame","Flammable"],["Corrosion","Skin burns / eye damage / corrosive to metals"],["Skull and crossbones","Acute toxicity (fatal or toxic)"],["Exclamation mark","Irritant or harmful"],["Gas cylinder","Gas under pressure"],["Flame over circle","Oxidiser"]];
+function flash(){let i=0,f=false;const o=$("#lout");(function d(){o.innerHTML=`<div class="card" style="text-align:center"><p class="sm">${i+1}/${FC.length}</p><h2>${f?FC[i][1]:FC[i][0]}</h2><button class="p" id="fl">Flip</button> <button class="p" id="fn">Next</button></div>`;$("#fl").onclick=()=>{f=!f;d()};$("#fn").onclick=()=>{i=(i+1)%FC.length;f=false;d()}})()}
+
+// ---- Real-time 3D (Three.js r128, procedural geometry) ----
+const V3={},LAST={},TOK={};
+function three(){return window.THREE?Promise.resolve():new Promise((r,x)=>{const t=document.createElement("script");t.src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";t.onload=r;t.onerror=()=>x(new Error("3D library could not be loaded (offline?)"));document.head.appendChild(t)})}
+async function mount(id,build,opt={}){LAST[id]=[build,opt];const el=document.getElementById(id);if(!el)return;V3[id]&&V3[id].dispose();const tok=TOK[id]=(TOK[id]||0)+1;
+ el.innerHTML='<div class="ld">Loading 3D…</div>';
+ try{await three()}catch(e){el.innerHTML=`<div class="ld">${esc(e.message)}</div>`;return}
+ let r;try{r=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){el.innerHTML='<div class="ld">WebGL is not available on this device, so the 3D view cannot be shown.</div>';return}
+ const T=THREE,w=el.clientWidth||320,h=el.clientHeight||300;r.setPixelRatio(Math.min(devicePixelRatio||1,1.75));r.setSize(w,h);
+ const sc=new T.Scene(),cam=new T.PerspectiveCamera(40,w/h,.1,100);cam.position.z=opt.z||9;
+ sc.add(new T.AmbientLight(0xffffff,.6));const a=new T.PointLight(0xE9A6B2,1.3,60);a.position.set(-6,5,6);const b=new T.PointLight(0x208B68,1.3,60);b.position.set(6,-4,5);sc.add(a,b);
+ let o;try{o=await build(sc,cam,T)||{}}catch(e){r.dispose();if(TOK[id]==tok)el.innerHTML=`<div class="ld">3D structure unavailable: ${esc(e.message)}</div>`;return}
+ if(TOK[id]!=tok||!document.getElementById(id)){r.dispose();return}
+ el.innerHTML="";el.appendChild(r.domElement);
+ let mx=0,my=0,dr=0,drag=false,lx=0,raf;const red=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const pd=e=>{drag=true;lx=e.clientX;el.style.cursor="grabbing"},pm=e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;if(drag&&!opt.pass){dr+=(e.clientX-lx)*.01;lx=e.clientX}},pu=()=>{drag=false;el.style.cursor="grab"};
+ const tg=opt.pass?document:el;tg.addEventListener("pointerdown",pd);tg.addEventListener("pointermove",pm);let vis=true;const io=new IntersectionObserver(es=>{vis=es[0].isIntersecting});io.observe(el);addEventListener("pointerup",pu);
+ const ro=new ResizeObserver(()=>{const W=el.clientWidth,H=el.clientHeight;if(W&&H){r.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}});ro.observe(el);
+ const clk=new T.Clock(),z0=cam.position.z;
+ const frame=()=>{raf=requestAnimationFrame(frame);if(!el.offsetParent||document.hidden||!vis)return;const t=clk.getElapsedTime();
+  cam.position.x+=(mx*1.2-cam.position.x)*.04;cam.position.y+=(-my*.8-cam.position.y)*.04;cam.position.z=z0;cam.lookAt(0,0,0);
+  if(o.root)o.root.rotation.y=o.sway?Math.sin(t*.4)*.5+dr:(red?0:t*.25)+dr;if(o.tick&&!red)o.tick(t);r.render(sc,cam)};
+ frame();
+ V3[id]={dispose(){cancelAnimationFrame(raf);ro.disconnect();tg.removeEventListener("pointerdown",pd);tg.removeEventListener("pointermove",pm);io.disconnect();removeEventListener("pointerup",pu);
+  sc.traverse(x=>{x.geometry&&x.geometry.dispose();if(x.material)[].concat(x.material).forEach(m=>m.dispose())});r.dispose();r.forceContextLoss&&r.forceContextLoss();r.domElement.remove();delete V3[id]}}}
+function disposeHidden(){Object.keys(V3).forEach(k=>{const e=document.getElementById(k);if(!e||!e.offsetParent)V3[k].dispose()})}
+// Fresnel glass shader
+function old_glass(T,col,op){return new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{c:{value:new T.Color(col)}},
+ vertexShader:"varying vec3 n;varying vec3 v;void main(){vec4 p=modelViewMatrix*vec4(position,1.);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
+ fragmentShader:"uniform vec3 c;varying vec3 n;varying vec3 v;void main(){vec3 N=normalize(n),V=normalize(v);float f=pow(1.-abs(dot(N,V)),3.);vec3 L=normalize(vec3(-.5,.8,.6));float s=pow(max(dot(reflect(-L,N),V),0.),40.);gl_FragColor=vec4(c*(.3+f)+vec3(s),clamp(.12+f*.75+s,0.,1.)*"+op.toFixed(2)+");}"})}
+const PR={flask:[[[0,-1.6],[1.5,-1.6],[1.6,-1.45],[.4,1.2],[.4,2],[.5,2.1]],[[0,-1.55],[1.42,-1.55],[1.05,-.3],[0,-.3]]],
+ beaker:[[[0,-1.4],[1,-1.4],[1,1.2],[1.08,1.28]],[[0,-1.35],[.94,-1.35],[.94,.2],[0,.2]]],
+ tube:[[[0,-2.1],[.2,-2.05],[.38,-1.9],[.5,-1.6],[.5,1.8],[.56,1.88]],[[0,-2],[.18,-1.96],[.34,-1.84],[.44,-1.6],[.44,-.4],[0,-.4]]]};
+function old_vessel(T,k,gc,lc){const g=new T.Group(),mk=(p,m)=>new T.Mesh(new T.LatheGeometry(p.map(q=>new T.Vector2(q[0],q[1])),40),m);
+ const liq=mk(PR[k][1],new T.MeshStandardMaterial({color:lc,transparent:true,opacity:.85,roughness:.2,metalness:.05})),gl=mk(PR[k][0],glass(T,gc,1));gl.renderOrder=2;g.add(liq,gl);return g}
+function dust(T,n){const a=new Float32Array(n*3).map(()=>(Math.random()-.5)*16),g=new T.BufferGeometry();g.setAttribute("position",new T.BufferAttribute(a,3));return new T.Points(g,new T.PointsMaterial({color:0xE9A6B2,size:.05,transparent:true,opacity:.6}))}
+// Molecules
+const CPK={1:0xf2f0ee,6:0x3a3a40,7:0x5a7be0,8:0xd9453f,9:0x8fd694,15:0xEBA36F,16:0xE8CA75,17:0x2fb36a,35:0x8b3a2f};
+function old_molGroup(T,m){const g=new T.Group(),P=m.P.map(p=>new T.Vector3(p[0],p[1],p[2])),c=new T.Box3().setFromPoints(P).getCenter(new T.Vector3()),rad=Math.max(.8,P.reduce((a,p)=>Math.max(a,p.distanceTo(c)),0)),k=3/rad,sf=Math.min(1,k*.7);
+ P.forEach(p=>p.sub(c).multiplyScalar(k));const sg=new T.SphereGeometry(1,24,16);
+ m.el.forEach((e,i)=>{const s=new T.Mesh(sg,new T.MeshStandardMaterial({color:CPK[e]||0xE9A6B2,roughness:.28,metalness:.1}));s.scale.setScalar((e==1?.26:.42)*sf);s.position.copy(P[i]);g.add(s)});
+ const Y=new T.Vector3(0,1,0);m.B.forEach(([a,b,o])=>{if(!P[a]||!P[b])return;const d=P[b].clone().sub(P[a]),L=d.length(),r=.07*sf*(o>1?1.7:1),cy=new T.Mesh(new T.CylinderGeometry(r,r,1,10),new T.MeshStandardMaterial({color:0xcfd8d3,roughness:.4}));
+  cy.scale.y=L;cy.position.copy(P[a]).add(P[b]).multiplyScalar(.5);cy.quaternion.setFromUnitVectors(Y,d.normalize());g.add(cy)});return g}
+async function fetchMol(cid){let d,is3=true;try{d=await j(`${PC}/compound/cid/${cid}/record/JSON?record_type=3d`)}catch(e){is3=false;d=await j(`${PC}/compound/cid/${cid}/record/JSON`)}
+ const c=d.PC_Compounds[0],el=c.atoms.element,ix={};c.atoms.aid.forEach((a,i)=>ix[a]=i);if(el.length>250)throw new Error("molecule too large for the viewer");
+ const cf=c.coords[0].conformers[0],P=el.map((e,i)=>[cf.x[i],cf.y[i],cf.z?cf.z[i]:0]),B=c.bonds?c.bonds.aid1.map((a,i)=>[ix[a],ix[c.bonds.aid2[i]],c.bonds.order[i]]):[];return{el,P,B,is3}}
+const molB=cid=>async(sc,cam,T)=>{const m=await fetchMol(cid),root=molGroup(T,m);sc.add(root,dust(T,60));return{root}};
+const benz=()=>{const el=[],P=[],B=[];for(let i=0;i<6;i++){const a=i*Math.PI/3;el.push(6);P.push([1.4*Math.cos(a),1.4*Math.sin(a),0])}for(let i=0;i<6;i++){const a=i*Math.PI/3;el.push(1);P.push([2.5*Math.cos(a),2.5*Math.sin(a),0]);B.push([i,(i+1)%6,i%2?1:2],[i,i+6,1])}return{el,P,B}};
+const heroOld=async(sc,cam,T)=>{const sx=innerWidth<700?.6:1,root=molGroup(T,benz());root.scale.setScalar(1.15);sc.add(root);
+ const f=vessel(T,"flask",0xDCEDE4,0x208B68),bk=vessel(T,"beaker",0xF4DFE0,0xDCD4EE),tb=vessel(T,"tube",0xDCEDE4,0xEBA36F),d=dust(T,innerWidth<700?70:160);
+ f.position.set(-4*sx,-1.2,-1);f.scale.setScalar(.8*sx);bk.position.set(4*sx,-1.4,-1.5);bk.scale.setScalar(.8*sx);tb.position.set(3.2*sx,1.8,-2);tb.scale.setScalar(.7*sx);sc.add(f,bk,tb,d);
+ return{root,tick:t=>{f.position.y=-1.2+Math.sin(t)*.15;bk.position.y=-1.4+Math.sin(t+2)*.15;tb.rotation.z=-.5+Math.sin(t*.7)*.08;d.rotation.y=t*.02}}};
+const cpB=st=>async(sc,cam,T)=>{const a=vessel(T,"flask",0xDCEDE4,0x208B68),b=vessel(T,"flask",0xF4DFE0,0xDCD4EE),hot=st=="known",col={known:0xEBA36F,unknown:0xE8CA75,none:0xDCEDE4}[st];
+ a.position.x=-2.6;b.position.x=2.6;a.scale.setScalar(.85);b.scale.setScalar(.85);
+ const ln=new T.Mesh(new T.CylinderGeometry(.04,.04,3.6,8),new T.MeshBasicMaterial({color:col}));ln.rotation.z=Math.PI/2;
+ const ring=new T.Mesh(new T.TorusGeometry(.7,.05,12,40),new T.MeshBasicMaterial({color:0xEBA36F,transparent:true,opacity:hot?.9:0}));sc.add(a,b,ln,ring);
+ return{tick:t=>{if(hot)ring.scale.setScalar(1+.15*Math.sin(t*3));a.position.y=Math.sin(t)*.1;b.position.y=Math.sin(t+1)*.1}}};
+const GC={Flammable:0xEBA36F,Oxidiser:0xE8CA75,"Water-reactive":0xDCD4EE,Corrosive:0xE9A6B2,"Acutely toxic":0x208B68};
+const stB=(z,inv)=>async(sc,cam,T)=>{const root=new T.Group(),fm=new T.MeshStandardMaterial({color:0x123D30,roughness:.5});
+ const box=(w,h,d,x,y,zz)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),fm);m.position.set(x,y,zz);root.add(m)};
+ box(.15,5,1.6,-2.1,0,0);box(.15,5,1.6,2.1,0,0);box(4.35,.15,1.6,0,2.5,0);box(4.35,.15,1.6,0,-2.5,0);box(4.2,5,.1,0,0,-.75);box(4.1,.08,1.5,0,-.8,0);box(4.1,.08,1.5,0,.85,0);
+ const door=new T.Mesh(new T.BoxGeometry(4.2,5,.04),glass(T,0xDCEDE4,.6));door.position.z=.82;door.renderOrder=3;root.add(door);
+ const shelf=[-2.42,-.76,.89],cnt=[0,0,0],order=[];inv.forEach(c=>{const g=z.find(x=>x[1].includes(c));const n=g?g[0]:"unassigned";if(!order.includes(n))order.push(n);
+  const s=order.indexOf(n)%3,bt=new T.Mesh(new T.CylinderGeometry(.26,.26,.7,20),new T.MeshStandardMaterial({color:g?GC[n]:0xaab3ad,roughness:.25,transparent:true,opacity:.9})),nk=new T.Mesh(new T.CylinderGeometry(.1,.1,.2,12),fm);
+  bt.position.set(-1.6+cnt[s]*.65,shelf[s]+.35,0);nk.position.set(bt.position.x,shelf[s]+.8,0);cnt[s]++;root.add(bt,nk)});
+ root.rotation.x=.08;sc.add(root);return{root,sway:true}};
+
+// ---- Luminous glass 3D (v4) ----
+function glass(T,col,op){return new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{c:{value:new T.Color(col)}},
+ vertexShader:"varying vec3 n;varying vec3 v;void main(){vec4 p=modelViewMatrix*vec4(position,1.);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
+ fragmentShader:"uniform vec3 c;varying vec3 n;varying vec3 v;void main(){vec3 N=normalize(n),V=normalize(v);float f=pow(1.-abs(dot(N,V)),2.5);vec3 rim=mix(vec3(.35,.85,1.),vec3(1.,.5,.8),smoothstep(-.6,.6,N.x));float s=pow(max(dot(reflect(-normalize(vec3(-.5,.8,.6)),N),V),0.),60.);float s2=pow(max(dot(reflect(-vec3(.7,-.3,.5),N),V),0.),40.);gl_FragColor=vec4(c*.3+rim*f*1.3+vec3(s)+rim*s2*.6,clamp(.14+f*.8+s+s2*.3,0.,1.)*"+op.toFixed(2)+");}"})}
+function iri(T){return new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{t:{value:0}},
+ vertexShader:"varying vec3 n;varying vec3 v;void main(){vec4 p=modelViewMatrix*vec4(position,1.);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
+ fragmentShader:"uniform float t;varying vec3 n;varying vec3 v;void main(){vec3 N=normalize(n),V=normalize(v);float f=pow(1.-abs(dot(N,V)),1.4);vec3 b=mix(vec3(.2,.04,.5),vec3(.95,.3,.7),.5+.5*sin(N.x*3.+N.y*2.+t*.4));b=mix(b,vec3(.3,.8,1.),smoothstep(.35,.8,f)*.5);b=mix(b,vec3(1.,.65,.3),smoothstep(.75,1.,f));float s=pow(max(dot(reflect(-normalize(vec3(-.4,.7,.6)),N),V),0.),50.);gl_FragColor=vec4(b+vec3(s),.5+.45*f);}"})}
+const PR2={flask:[[0,-1.6],[1.5,-1.6],[1.62,-1.45],[.42,1.2],[.42,2],[.52,2.1]],beaker:[[0,-1.4],[1,-1.4],[1,1.2],[1.08,1.28]],tube:[[0,-2.1],[.2,-2.05],[.38,-1.9],[.5,-1.6],[.5,1.8],[.56,1.88]]};
+function vessel(T,k,gc,lc){const g=new T.Group(),mk=(p,m)=>new T.Mesh(new T.LatheGeometry(p.map(q=>new T.Vector2(q[0],q[1])),56),m),o=PR[k][0],i=o.map(q=>[q[0]?Math.max(q[0]-.07,.02):0,q[1]?q[1]+(q[1]<-1?.06:0):0]);
+ const liq=mk(PR[k][1],new T.MeshStandardMaterial({color:lc,transparent:true,opacity:.88,roughness:.12,metalness:.05,emissive:lc,emissiveIntensity:.18})),go=mk(o,glass(T,gc,1)),gi=mk(i,glass(T,gc,.6));go.renderOrder=2;gi.renderOrder=2;
+ const top=o[o.length-2],rim=new T.Mesh(new T.TorusGeometry(top[0]+.06,.07,12,48),glass(T,gc,1));rim.rotation.x=Math.PI/2;rim.position.y=o[o.length-1][1];
+ const hl=new T.Mesh(new T.PlaneGeometry(.1,k=="flask"?2.4:2.2),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.35,blending:T.AdditiveBlending,depthWrite:false}));hl.position.set(k=="flask"?-.85:-.7,.0,k=="flask"?.85:.7);hl.rotation.z=k=="flask"?.33:0;hl.rotation.y=-.4;hl.renderOrder=4;
+ g.add(liq,go,gi,rim,hl);return g}
+const TINT={1:0xbfefff,6:0x9b8bff,7:0x7fa8ff,8:0xff7a9a,9:0x9fffd0,15:0xffb27a,16:0xffd98a,17:0x5fe8b0,35:0xd07a6a};
+function molGroup(T,m){const g=new T.Group(),P=m.P.map(p=>new T.Vector3(p[0],p[1],p[2])),c=new T.Box3().setFromPoints(P).getCenter(new T.Vector3()),rad=Math.max(.8,P.reduce((a,p)=>Math.max(a,p.distanceTo(c)),0)),k=3/rad,sf=Math.min(1,k*.7);
+ P.forEach(p=>p.sub(c).multiplyScalar(k));const sg=new T.SphereGeometry(1,32,24),mats={},cores={};
+ m.el.forEach((e,i)=>{const t=TINT[e]||0xE9A6B2,gm=mats[e]||(mats[e]=glass(T,t,1)),cm=cores[e]||(cores[e]=new T.MeshBasicMaterial({color:t,transparent:true,opacity:.5,blending:T.AdditiveBlending,depthWrite:false})),r=(e==1?.3:.5)*sf;
+  const s=new T.Mesh(sg,gm);s.scale.setScalar(r);s.position.copy(P[i]);s.renderOrder=2;const q=new T.Mesh(sg,cm);q.scale.setScalar(r*.45);q.position.copy(P[i]);g.add(q,s)});
+ const Y=new T.Vector3(0,1,0),bm=glass(T,0xcfe8ff,1);m.B.forEach(([a,b,o])=>{if(!P[a]||!P[b])return;const d=P[b].clone().sub(P[a]),L=d.length(),r=.085*sf*(o>1?1.5:1),cy=new T.Mesh(new T.CylinderGeometry(r,r,1,14),bm);
+  cy.scale.y=L;cy.position.copy(P[a]).add(P[b]).multiplyScalar(.5);cy.quaternion.setFromUnitVectors(Y,d.normalize());cy.renderOrder=1;g.add(cy)});return g}
+function bokeh(T,col,n,sz){const c=document.createElement("canvas");c.width=c.height=64;const x=c.getContext("2d"),gr=x.createRadialGradient(32,32,2,32,32,30);gr.addColorStop(0,"rgba(255,255,255,.9)");gr.addColorStop(.5,"rgba(255,255,255,.35)");gr.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=gr;x.fillRect(0,0,64,64);
+ const a=new Float32Array(n*3).map((_,i)=>i%3==2?(Math.random()-.8)*6:(Math.random()-.5)*(i%3?9:13)),g=new T.BufferGeometry();g.setAttribute("position",new T.BufferAttribute(a,3));
+ return new T.Points(g,new T.PointsMaterial({map:new T.CanvasTexture(c),color:col,size:sz,transparent:true,opacity:.55,depthWrite:false,blending:T.AdditiveBlending}))}
+const ETH=()=>({el:[6,6,8,1,1,1,1,1,1],P:[[0,0,0],[1.5,0,0],[2.1,1.25,.1],[3.05,1.2,.2],[-.4,1,0],[-.4,-.5,.9],[-.4,-.5,-.9],[1.9,-.5,.9],[1.9,-.5,-.9]],B:[[0,1,1],[1,2,1],[2,3,1],[0,4,1],[0,5,1],[0,6,1],[1,7,1],[1,8,1]]});
+const heroV4=async(sc,cam,T)=>{const m=innerWidth<700?.7:1,knot=new T.Mesh(new T.TorusKnotGeometry(1.5,.5,200,32,2,3),iri(T));knot.position.set(.9*m,.4,-4.5);sc.add(knot);
+ const f=vessel(T,"flask",0xffffff,0xff7fb8);f.position.set(-1.2*m,-1.6,.5);f.scale.setScalar(1.1*m);
+ const root=molGroup(T,ETH());root.position.set(1.9*m,1.2,1.2);root.scale.setScalar(.62*m);
+ const sp=[];for(let i=0;i<6;i++){const s=new T.Mesh(new T.SphereGeometry(1,24,18),glass(T,[0xDCD4EE,0xE9A6B2,0x9fe8ff][i%3],1));s.scale.setScalar(.15+Math.random()*.3);s.position.set((Math.random()-.5)*8*m,(Math.random()-.5)*5,Math.random()*2-1);s.renderOrder=2;s.userData.p=Math.random()*6;sp.push(s);sc.add(s)}
+ const b1=bokeh(T,0xff7fc8,22,1.4),b2=bokeh(T,0x5fd8ff,22,1.1),d=dust(T,innerWidth<700?60:140);sc.add(f,root,b1,b2,d);
+ return{root,tick:t=>{knot.rotation.x=t*.12;knot.rotation.y=t*.09;knot.material.uniforms.t.value=t;f.position.y=-1.6+Math.sin(t*.8)*.1;sp.forEach(s=>s.position.y+=Math.sin(t+s.userData.p)*.002);b1.rotation.z=t*.01;b2.rotation.z=-t*.012;d.rotation.y=t*.02}}};
+const _s2=show;show=id=>{_s2(id);document.body.dataset.sec=id;document.querySelectorAll(".hn a").forEach(a=>a.classList.toggle("act",a.dataset.go==id))};
+document.addEventListener("click",e=>{const a=e.target.closest("[data-go]");if(a)show(a.dataset.go)});
+document.body.dataset.sec="hero";
+// ---- Reflective liquid-chrome form (real-time vertex-displaced mesh + procedural environment reflection) ----
+function blobMat(T,o){return new T.ShaderMaterial({uniforms:{t:{value:0},tw:{value:o.tw},am:{value:o.am}},
+vertexShader:`uniform float t,tw,am;varying vec3 vN,vV;
+float nz(vec3 p){return sin(p.x*1.3+t*.5)*cos(p.y*1.7-t*.4)+sin(p.z*1.9+t*.3)*cos(p.x*2.1+p.y*.7)+.5*sin(p.y*3.1+p.z*2.3-t*.6);}
+vec3 D(vec3 p){float a=p.y*tw;float c=cos(a),s=sin(a);p.xz=mat2(c,-s,s,c)*p.xz;float d=am*nz(p*1.3)+.12*sin(7.*p.x+4.*p.y+t*.7)*sin(5.*p.z+t*.5);return p*(1.+d);}
+void main(){vec3 n=normalize(position);vec3 up=abs(n.y)<.99?vec3(0.,1.,0.):vec3(1.,0.,0.);vec3 a=normalize(cross(up,n));vec3 b=cross(n,a);float e=.03;
+vec3 p0=D(n),p1=D(normalize(n+a*e)),p2=D(normalize(n+b*e));vec3 N=normalize(cross(p1-p0,p2-p0));if(dot(N,n)<0.)N=-N;
+vec4 mv=modelViewMatrix*vec4(p0,1.);vN=normalize(normalMatrix*N);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`,
+fragmentShader:`uniform float t;varying vec3 vN,vV;
+vec3 env(vec3 r){float a=r.y*.5+.5;vec3 c=mix(vec3(.04,0.,.16),vec3(.5,.08,.95),smoothstep(0.,.45,a));c=mix(c,vec3(1.,.22,.68),smoothstep(.4,.75,a));c=mix(c,vec3(1.,.62,.38),smoothstep(.78,1.,a));
+c+=vec3(.15,.35,1.)*pow(max(0.,sin(r.x*3.5+r.z*2.+t*.3)),3.);c+=vec3(1.,.92,.97)*pow(max(dot(r,normalize(vec3(.35,.8,.5))),0.),24.)*1.6;return c;}
+void main(){vec3 N=normalize(vN),V=normalize(vV),r=reflect(-V,N);float f=pow(1.-max(dot(N,V),0.),2.2);
+vec3 c=vec3(env(r+vec3(.05,0.,0.)).r,env(r).g,env(r-vec3(.05,0.,0.)).b);c*=.55+f;c+=vec3(.9,.3,.8)*f*.35;gl_FragColor=vec4(pow(c,vec3(.95)),1.);}`})}
+const blobB=cfg=>async(sc,cam,T)=>{const lo=innerWidth<700,m=new T.Mesh(new T.SphereGeometry(1,lo?64:128,lo?48:96),blobMat(T,cfg));m.scale.set(...cfg.s);sc.add(m);return{root:m,sway:true,tick:t=>{m.material.uniforms.t.value=t}}};
+const heroB=blobB({tw:1.3,am:.32,s:[1.55,1,.7]}),aboutB=blobB({tw:2.4,am:.4,s:[1.25,1.25,1.1]});
+// ---- Green AI assistant (PubChem-assembled answers, no LLM required) ----
+let ctxC=null;const AL={bleach:23665760,hypochlorite:23665760,ammonia:222,hydrochloric:313,hcl:313,nitric:944,acetone:180,peroxide:784,sulfuric:1118,sulphuric:1118,"sodium hydroxide":14798,naoh:14798,lye:14798};
+const bub=(t,c)=>{const d=document.createElement("div");d.className="bub "+c;d.innerHTML=t;$("#cmsgs").appendChild(d);d.scrollIntoView({block:"end"});return d};
+async function sec(c,key){cur=c;await textPanel(key,"");return cache[c.cid+key].items}
+const lst=(it,n)=>it.slice(0,n).map(x=>`• ${esc(x.t.length>320?x.t.slice(0,320)+"…":x.t)} <span class="sm">(${x.r?esc(x.r.n):"PubChem"})</span>`).join("<br>");
+async function answer(q){const l=q.toLowerCase(),hits=[...new Set(Object.keys(AL).filter(k=>l.includes(k)).map(k=>AL[k]))];
+ if(/mix|together|combin|react with|store with|compatib/.test(l)){const ids=hits.slice();if(ctxC&&!ids.includes(ctxC.cid)&&ids.length<2)ids.unshift(ctxC.cid);
+  if(ids.length<2)return"Name two chemicals (for example “bleach and ammonia”), or set one above and name the other.";
+  const r=R.find(x=>x[0].includes(ids[0])&&x[0].includes(ids[1]));
+  return r?`<b>Known incompatibility:</b> ${r[1]}.<br>${r[2]}<br><span class="sm">Curated sample rule; verify in CAMEO Chemicals and SDS Section 10. Do not mix.</span>`:`<b>No incompatibility in the curated sample</b>, which is <i>not</i> proof they are safe together. Check SDS Section 10 and a compatibility chart before mixing or storing.`}
+ let c=ctxC;if(!c&&hits.length)c=await fetchChem(String(hits[0]));if(!c)return"Set a chemical above first, or name a well-known one in your question.";cur=c;
+ const foot=`<br><span class="sm">Source: PubChem (${c.url}). Does not replace the supplier SDS.</span>`,T=esc(c.pr.Title);
+ if(/water|moisture/.test(l)){const it=await sec(c,"water"),w=c.ghs.H.filter(h=>/^(H260|H261|EUH014|EUH029)$/.test(h.c));
+  return`<b>Water reactivity — ${T}</b><br>`+(w.length?"Reacts dangerously with water per GHS:<br>"+w.map(h=>"• "+esc(h.t)).join("<br>"):"No water-reactivity GHS code retrieved: <b>insufficient information</b>, not proof of safety.")+(it.length?"<br>Reported:<br>"+lst(it,3):"")+foot}
+ const M=[[/\bppe\b|glove|protect|respirator|goggle/,"ppe","PPE & handling"],[/stor/,"store","Storage"],[/first aid|exposure|swallow|inhal|eye|skin/,"aid","First aid"],[/spill|leak|release|clean/,"spill","Accidental release"],[/environment|aquatic|dispos|eco/,"env","Environmental"],[/precaution|handl/,"ppe","Handling"]];
+ for(const [re,key,lab] of M)if(re.test(l)){const it=await sec(c,key);return it.length?`<b>${lab} — ${T}</b><br>${lst(it,4)}${foot}`:`No ${lab.toLowerCase()} text was retrieved from PubChem for ${T}: <b>insufficient information</b>. Consult the SDS.`}
+ if(/formula|weight|\bcas\b|iupac|propert/.test(l))return`<b>${T}</b><br>Formula ${esc(c.pr.MolecularFormula)} · MW ${esc(c.pr.MolecularWeight)} · CID ${c.cid} · CAS ${esc(c.cas.join(", ")||"not found")}<br>IUPAC: ${esc(c.pr.IUPACName||"n/a")}${foot}`;
+ const H=c.ghs.H;return H.length?`<b>Hazards — ${T}</b> (signal: ${esc([...new Set(c.ghs.signal)].join("/")||"n/a")})<br>`+H.slice(0,8).map(h=>"• "+esc(h.t)).join("<br>")+`<br><span class="sm">Inherent hazard classification, not workplace risk.</span>${foot}`:`No GHS classification was retrieved for ${T}: <b>insufficient information</b>. Check the SDS.`}
+async function send(t){t=t.trim();if(!t)return;$("#cm").value="";bub(esc(t),"me");const b=bub("Retrieving from PubChem…","bot");try{b.innerHTML=await answer(t)}catch(e){b.textContent="Could not retrieve data: "+e.message}b.scrollIntoView({block:"end"})}
+$("#cset").onclick=async()=>{const q=$("#cx").value.trim();if(!q)return;const b=bub("Looking up…","bot");try{ctxC=await fetchChem(q);b.innerHTML=`Context set to <b>${esc(ctxC.pr.Title)}</b> (CID ${ctxC.cid}). Ask me anything about it.`}catch(e){b.textContent=e.message}};
+$("#csend").onclick=()=>send($("#cm").value);$("#cm").onkeydown=e=>{if(e.key=="Enter")send($("#cm").value)};$("#cx").onkeydown=e=>{if(e.key=="Enter")$("#cset").click()};
+document.querySelectorAll(".chips button").forEach(b=>b.onclick=()=>send(b.textContent));
+let lmN=0;async function lm(n){try{mount("v-ln",molB(await resolve(n)),{z:9})}catch(e){$("#v-ln").innerHTML=`<div class="ld">${esc(e.message)}</div>`}}
+const _show=show;show=id=>{_show(id);disposeHidden();document.querySelectorAll("#"+id+" .v3").forEach(e=>{if(!V3[e.id]&&LAST[e.id])mount(e.id,...LAST[e.id])})};
+
+</script><script>
+/* ===== v5: no 3D on tool pages, multi-chemical compatibility, chemical-specific guidance, accident cards with photos, smarter assistant, endless quiz ===== */
+const _m=mount;mount=function(id,...a){return /^v-(hero|ab)$/.test(id)?_m(id,...a):undefined};
+const HC=(c,re)=>c.ghs.H.some(h=>re.test(h.c)),ht=h=>h.t.replace(/^\S+\s*(\(\d+(\.\d+)?%\))?:?\s*/,"");
+const LBL={FLAM:"Flammable",OXID:"Oxidiser",WATERR:"Water-reactive",ACID:"Acid",BASE:"Base",HYPO:"Hypochlorite",AMM:"Ammonia/ammonium",GASGEN:"Cyanide/sulfide",ISO:"Isocyanate",WATER:"Water",TOX:"Acutely toxic",CORR:"Corrosive"};
+const ALS={bleach:"sodium hypochlorite",lye:"sodium hydroxide","caustic soda":"sodium hydroxide",vinegar:"acetic acid","rubbing alcohol":"isopropanol","baking soda":"sodium bicarbonate",peroxide:"hydrogen peroxide","muriatic acid":"hydrochloric acid","battery acid":"sulfuric acid",alcohol:"ethanol","nail polish remover":"acetone",hcl:"hydrochloric acid",naoh:"sodium hydroxide",h2so4:"sulfuric acid",hno3:"nitric acid",nh3:"ammonia",mic:"methyl isocyanate"};
+const FCH={};
+async function fc(n){const k=(ALS[n.trim().toLowerCase()]||n.trim()).toLowerCase();return FCH[k]||(FCH[k]=await fetchChem(k))}
+async function many(s){const names=s.split(/[,;\n+]|\s+and\s+/i).map(x=>x.trim()).filter(Boolean).slice(0,10),ok=[],bad=[];
+ for(const n of names){try{const c=await fc(n);if(!ok.find(x=>x.cid==c.cid))ok.push(c)}catch(e){bad.push(n)}}return{ok,bad}}
+// ---- classify by GHS codes + name ----
+function cls(c){const t=c.pr.Title.toLowerCase(),s=new Set();
+ if(HC(c,/^H22[0-68]$/))s.add("FLAM");
+ if(HC(c,/^H27[0-2]$/)||/peroxide|hypochlorite|permanganate|chlorate|perchlor|dichromate|nitrate|nitric acid/.test(t))s.add("OXID");
+ if(HC(c,/^(H260|H261|EUH014)$/)||/^(sodium|potassium|lithium)$|hydride|carbide/.test(t))s.add("WATERR");
+ if(/\bacid\b|^hydrogen (chloride|fluoride|bromide)|^hydrochloric|^sulfuric|^nitric/.test(t)&&!/amino|nucleic|fatty/.test(t))s.add("ACID");
+ if((/hydroxide|^ammonia|amine$/.test(t))&&!/^ammonium (nitrate|chloride)/.test(t))s.add("BASE");
+ if(/hypochlorite/.test(t))s.add("HYPO");
+ if(/^ammonia|ammonium hydroxide/.test(t))s.add("AMM");
+ if(/cyanide|sulfide|sulphide/.test(t)&&!/disulfide|carbon/.test(t))s.add("GASGEN");
+ if(/isocyanate/.test(t))s.add("ISO");
+ if(/^water$/.test(t))s.add("WATER");
+ if(HC(c,/^H(300|301|310|311|330|331)$/))s.add("TOX");
+ if(HC(c,/^(H290|H314)$/))s.add("CORR");
+ return s}
+const RU=[
+[["HYPO","ACID"],3,"Releases toxic chlorine gas.","Never mix or store together. Keep bleach away from all acids (vinegar and toilet cleaners included)."],
+[["HYPO","AMM"],3,"Forms toxic chloramine vapours.","Never mix bleach with ammonia or ammonia-based cleaners."],
+[["HYPO","FLAM"],3,"Hypochlorite can react with organic solvents (e.g. acetone, alcohols) forming chlorinated by-products such as chloroform, with heat and fire risk.","Keep apart; never use bleach to clean up solvents."],
+[["OXID","FLAM"],3,"An oxidiser feeds combustion: fire or explosion risk, sometimes self-ignition.","Store in separate cabinets, as far apart as possible. Keep fuels and solvents away from oxidisers."],
+[["ACID","GASGEN"],3,"Acids release highly toxic hydrogen cyanide / hydrogen sulfide gas from cyanides and sulfides.","Never store together. Keep cyanides and sulfides dry, locked and acid-free."],
+[["WATERR","WATER"],3,"Violent reaction with water: heat and flammable gas (often hydrogen).","Keep water-reactive materials dry, sealed, and away from sinks and sprinklers."],
+[["WATERR","ACID"],3,"Violent reaction releasing flammable gas and heat.","Keep water-reactive chemicals away from every acid, base and aqueous solution."],
+[["WATERR","BASE"],3,"Violent reaction releasing flammable gas and heat (bases are usually aqueous or hygroscopic).","Keep water-reactive chemicals away from every acid, base and aqueous solution."],
+[["WATERR","OXID"],3,"Reaction can ignite or explode.","Store in separate, dry cabinets."],
+[["ISO","WATER"],3,"Isocyanates react exothermically with water, releasing CO2 and heat (pressure build-up in closed containers).","Keep isocyanates dry and tightly closed."],
+[["ISO","ACID"],3,"Acids/bases catalyse violent exothermic reactions of isocyanates.","Store isocyanates away from acids, bases, amines and water."],
+[["ISO","BASE"],3,"Bases and amines catalyse violent exothermic reactions of isocyanates.","Store isocyanates away from acids, bases, amines and water."],
+[["ISO","OXID"],2,"Oxidisers can intensify fire and decomposition of isocyanates.","Store apart."],
+[["WATERR","FLAM"],2,"A water-reactive chemical can ignite flammable vapour if it meets moisture.","Separate; dry storage; dry-powder extinguisher, no water."],
+[["OXID","ACID"],2,"Oxidisers with acids can release toxic gases (chlorine, nitrogen oxides) and heat.","Segregate oxidisers from acids."],
+[["ACID","BASE"],2,"Violent exothermic neutralisation: heat, spattering and fumes.","Use separate corrosive cabinets and trays for acids and bases."],
+[["ACID","FLAM"],2,"Concentrated acids can react exothermically with organic solvents and raise vapour/fire risk.","Acids in a corrosives cabinet, solvents in a flammables cabinet."]];
+function pairCheck(A,B){const h=RU.filter(r=>(A.s.has(r[0][0])&&B.s.has(r[0][1]))||(A.s.has(r[0][1])&&B.s.has(r[0][0])));
+ if(h.length){const lv=Math.max(...h.map(x=>x[1])),t=h.filter(x=>x[1]==lv);return{lv,why:t.map(x=>x[2]).join(" "),act:t.map(x=>x[3]).join(" ")}}
+ if((!A.s.size&&!A.c.ghs.found)||(!B.s.size&&!B.c.ghs.found))return{lv:0,why:"No hazard data was retrieved for one of these chemicals, so nothing can be concluded.",act:"Read the supplier SDS (Section 10) and keep it separate until checked."};
+ if(A.s.has("FLAM")&&B.s.has("FLAM"))return{lv:1,why:"Both are flammable: compatible in one ventilated flammables cabinet.",act:"Keep away from heat, sparks and oxidisers; ground containers when pouring."};
+ return{lv:1,why:"No hazardous interaction is predicted between their hazard classes.",act:"Normal precautions. Confirm in SDS Section 10 before bulk storage or mixing."}}
+function incompat(s){const o=new Set;RU.forEach(r=>{if(r[1]<2)return;r[0].forEach((x,i)=>{if(s.has(x)&&!s.has(r[0][1-i]))o.add(LBL[r[0][1-i]])})});return[...o]}
+// ---- chemical-specific guidance derived from GHS codes ----
+function derive(c){const s=cls(c),h=x=>HC(c,x),o={ppe:[],store:[],aid:[],spill:[],fire:[],env:[]};
+ o.ppe.push("Splash goggles, lab coat/long sleeves and chemical-resistant gloves (check glove material in SDS Section 8; nitrile is not right for every solvent).");
+ if(h(/^H3(14|18)$/))o.ppe.push("Corrosive: face shield over goggles, chemical-resistant apron and gloves (butyl/neoprene); eyewash and safety shower within reach.");
+ if(h(/^H33[0-5]$/))o.ppe.push("Inhalation hazard: work in a fume hood or with local exhaust; respirator only if exposure cannot be controlled.");
+ if(h(/^H31[01]$/))o.ppe.push("Toxic through skin: cover all skin, double-glove, wash hands after removing gloves; contaminated clothing stays in the work area.");
+ if(h(/^H3[456][01]$/))o.ppe.push("Suspected/known carcinogen, mutagen or reproductive toxin: restrict access, avoid every exposure; pregnant workers should seek advice first.");
+ if(s.has("FLAM"))o.ppe.push("Flammable: flame-resistant/antistatic clothing, non-sparking tools, no ignition sources, ground and bond containers.");
+ if(s.has("OXID"))o.ppe.push("Oxidiser: keep clothing and tools free of organic contamination; keep combustibles away.");
+ if(s.has("WATERR"))o.ppe.push("Water-reactive: dry gloves and tools; dry-powder extinguisher nearby; never use water.");
+ if(s.has("FLAM"))o.store.push("Ventilated flammables cabinet, away from heat, sparks and oxidisers; keep closed and ground when transferring.");
+ if(s.has("OXID"))o.store.push("Away from fuels, solvents and combustibles (paper, wood).");
+ if(s.has("WATERR"))o.store.push("Dry, tightly sealed, away from water, acids and humidity.");
+ if(s.has("ACID"))o.store.push("Corrosives cabinet, low shelf, separate from bases, cyanides and sulfides.");
+ if(s.has("BASE"))o.store.push("Corrosives cabinet separate from acids; keep away from isocyanates and water-reactive metals.");
+ if(s.has("HYPO"))o.store.push("Cool, dark, vented cap; never near acids or ammonia.");
+ if(s.has("ISO"))o.store.push("Tightly closed and dry; moisture builds pressure.");
+ if(s.has("TOX"))o.store.push("Locked, ventilated storage with restricted access, minimum quantity and a use log.");
+ if(s.has("CORR")&&!s.has("ACID")&&!s.has("BASE"))o.store.push("Corrosion-resistant containers with secondary containment, low shelf.");
+ if(h(/^H28[01]$/))o.store.push("Pressurised gas: secure cylinders upright, cap on, away from heat.");
+ o.store.push("Original labelled container, tightly closed, cool and dry, in a spill tray.");
+ if(h(/^H33[0-5]$/))o.aid.push("Inhaled: move to fresh air immediately, keep at rest and warm, call a doctor/poison centre; if not breathing and trained, give artificial respiration (avoid mouth-to-mouth with toxic vapours).");
+ if(h(/^H3(10|11|14|15|17)$/))o.aid.push(s.has("WATERR")?"Skin: brush off dry material first, then flush with plenty of water 15+ minutes; seek medical help.":"Skin: remove contaminated clothing; rinse with plenty of water for 15+ minutes; seek medical help for burns or persistent irritation.");
+ if(h(/^H31[89]$|^H314$/))o.aid.push("Eyes: rinse cautiously with water for 15+ minutes, remove contact lenses if easy; get medical help immediately.");
+ if(h(/^H30[0-4]$/))o.aid.push("Swallowed: rinse mouth; do NOT induce vomiting (corrosives and aspiration hazards); call a poison centre/doctor at once.");
+ o.aid.push("In any serious exposure call emergency services and take the SDS with the casualty.");
+ o.spill.push("Evacuate non-essential people, ventilate if safe, contain with inert absorbent (sand, vermiculite; not sawdust or paper) and dispose of as hazardous waste. Large or unknown spill: evacuate and call the response team.");
+ if(s.has("ACID")||s.has("BASE")||s.has("CORR"))o.spill.push("Corrosive: contain only; neutralise only if trained and equipped; protect drains.");
+ if(s.has("FLAM"))o.spill.push("Remove ignition sources, use non-sparking tools; vapour can travel and flash back.");
+ if(s.has("TOX"))o.spill.push("Toxic: do not enter without breathing apparatus; evacuate and call responders.");
+ if(s.has("WATERR"))o.spill.push("Do NOT use water; cover with dry sand or dry powder.");
+ if(s.has("OXID"))o.spill.push("Keep away from combustibles; do not wipe up with paper or rags (can ignite).");
+ if(s.has("FLAM"))o.fire.push("Use CO2, dry chemical or alcohol-resistant foam; a water jet can spread burning liquid (water spray only to cool containers). Vapour can flash back.");
+ if(s.has("WATERR"))o.fire.push("Do NOT use water. Use dry sand or dry powder (Class D for metals).");
+ if(s.has("OXID"))o.fire.push("Oxidisers intensify fire; evacuate, fight from a distance, explosion risk.");
+ if(s.has("TOX")||s.has("CORR"))o.fire.push("Burning can release toxic/corrosive gases: firefighters need breathing apparatus; evacuate downwind areas.");
+ o.fire.push("Raise the alarm and evacuate; only trained staff tackle small fires. Check SDS Section 5 for extinguishing media.");
+ const e=c.ghs.H.filter(x=>/^H4/.test(x.c));
+ if(e.length)o.env.push("Environmental classification: "+e.map(x=>x.c+" "+ht(x)).join("; ")+".");
+ o.env.push(e.length?"Never release to drains or soil; collect waste for licensed disposal.":"No environmental hazard code in PubChem data; still keep it out of drains and soil and dispose of as chemical waste.");
+ return o}
+HEADS.fire=["Fire Fighting Procedures","Fire Hazards"];TABS.splice(1,0,["phys","Properties"]);TABS.splice(6,0,["fire","Fire Fighting"]);
+const PH=["Physical Description","Boiling Point","Melting Point","Flash Point","Density","Solubility","Vapor Pressure","Autoignition Temperature"];
+const srcLine=x=>`<span class="sm">Source: ${x.r?(x.r.u?`<a href="${esc(x.r.u)}" target="_blank" rel="noopener">${esc(x.r.n)}</a>`:esc(x.r.n)):"PubChem"}</span>`;
+async function textPanel(key,title,extra,nd){const c=cur,k=c.cid+key;
+ if(!cache[k]){const res=await Promise.all((HEADS[key]||[]).map(h=>heading(c.cid,h))),seen=new Set,items=[];res.forEach(r=>(r||[]).forEach(x=>{if(!seen.has(x.t)){seen.add(x.t);items.push(x)}}));cache[k]={items,reached:res.some(r=>r!==null)}}
+ const items=cache[k].items,d=nd?[]:(derive(c)[key]||[]);
+ return`<div class="card ${items.length||d.length?"":"info"}"><h3>${title}</h3>${extra||""}
+ ${d.length?`<h4>For ${esc(c.pr.Title)} <span class="lab">rule-based from its GHS codes</span></h4>${d.map(x=>`<p>• ${esc(x)}</p>`).join("")}`:""}
+ ${items.length?`<h4>Reported in PubChem <span class="lab">source excerpts</span></h4>${items.slice(0,6).map(x=>`<p>• ${esc(x.t.length>450?x.t.slice(0,450)+"…":x.t)}<br>${srcLine(x)}</p>`).join("")}`:(d.length?"":"<p>No text available for this section; consult the supplier SDS.</p>")}
+ <p class="sm">Guidance is decision support; it does not replace the supplier SDS or qualified advice.</p></div>`}
+async function physPanel(c){const r=await Promise.all(PH.map(h=>heading(c.cid,h)));const rows=PH.map((h,i)=>r[i]&&r[i][0]?`<tr><td>${h}</td><td>${esc(r[i][0].t.slice(0,240))}</td></tr>`:"").join("");
+ return`<div class="card"><h3>Properties <span class="lab">PubChem</span></h3><table class="tbl"><tr><td>Formula</td><td>${esc(c.pr.MolecularFormula)}</td></tr><tr><td>Molecular weight</td><td>${esc(c.pr.MolecularWeight)} g/mol</td></tr>${rows}</table></div>`}
+async function openTab(t){document.querySelectorAll("#tabs .tb").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
+ const p=$("#panel");p.innerHTML='<div class="card">Loading…</div>';const c=cur;let h="";
+ const T={ppe:["ppe","PPE & safe handling"],store:["store","Storage & incompatibilities"],aid:["aid","First aid (seek medical help / call emergency services)"],spill:["spill","Spill response"],env:["env","Environmental information"],fire:["fire","Fire fighting"]};
+ if(t=="haz")h=hazPanel(c);else if(t=="phys")h=await physPanel(c);
+ else if(t=="water")h=water(c.ghs.H)+await textPanel("water","Reported air/water reactivity",null,1);
+ else if(T[t]){h=await textPanel(...T[t]);if(t=="store"){const i=incompat(cls(c));h+=`<div class="card warn"><h3>Keep ${esc(c.pr.Title)} away from</h3><p>${i.length?i.map(x=>`<span class="lab d">${x}</span>`).join(" "):"No class-specific incompatibility from its GHS codes; still check SDS Section 10."}</p></div>`}}
+ else h=`<div class="card ok"><h3>Source</h3><div class="sm">PubChem (NCBI/NLM) live · CID ${c.cid} · retrieved ${c.t}<br><a href="${c.url}" target="_blank" rel="noopener">${c.url}</a></div></div>`;
+ if(cur===c)p.innerHTML=h}
+// ---- compatibility / storage analysis ----
+const LC=["#d98a00","#10a56b","#d98a00","#e5484d"],IC=["❔","✅","⚠️","⛔"],VT=["Not enough data","OK together (normal precautions)","Caution: keep separate","DANGEROUS: never mix or store together"];
+const TIP={FLAM:"Flammables: ventilated flammables cabinet, no ignition sources, ground and bond when pouring.",OXID:"Oxidisers: away from fuels, solvents, paper and wood.",WATERR:"Water-reactive: keep dry and sealed; no water or sprinklers nearby; dry-powder extinguisher.",ACID:"Acids: corrosive cabinet, low shelf, spill tray, apart from bases/cyanides/sulfides.",BASE:"Bases: separate corrosive cabinet from acids.",TOX:"Toxic chemicals: locked, ventilated storage, smallest quantity, keep a use log.",HYPO:"Bleach: cool, dark, vented cap; never near acids or ammonia.",GASGEN:"Cyanides/sulfides: dry, locked, far from any acid.",ISO:"Isocyanates: dry and tightly closed.",CORR:"Corrosives: corrosion-resistant containers, low shelves, eyewash nearby."};
+function renderAnalysis(list,bad){const E=list.map(c=>({c,s:cls(c)})),P=[],nm=e=>esc(e.c.pr.Title);
+ for(let i=0;i<E.length;i++)for(let k=i+1;k<E.length;k++)P.push({a:E[i],b:E[k],...pairCheck(E[i],E[k])});
+ P.sort((x,y)=>(y.lv==0?1.5:y.lv)-(x.lv==0?1.5:x.lv));
+ let h=bad&&bad.length?`<div class="card info">Could not find: <b>${bad.map(esc).join(", ")}</b>. Check spelling or use a CAS number/formula.</div>`:"";
+ h+=`<div class="card"><h3>Chemicals analysed</h3><table class="tbl">${E.map((e,i)=>`<tr><td><b>${i+1}. ${nm(e)}</b><div class="sm">CID ${e.c.cid} · ${esc([...new Set(e.c.ghs.signal)].join("/")||"no signal word")}</div></td><td>${[...e.s].map(x=>`<span class="lab">${LBL[x]}</span>`).join("")||'<span class="lab w">no class identified</span>'}</td></tr>`).join("")}</table></div>`;
+ if(E.length<2)return h+'<div class="card sm">Add at least one more chemical to see what can be placed together.</div>';
+ const f=(a,b)=>P.find(p=>(p.a==a&&p.b==b)||(p.a==b&&p.b==a));
+ h+=`<div class="card"><h3>Compatibility matrix</h3><div style="overflow-x:auto"><table class="tbl"><tr><th></th>${E.map((e,i)=>`<th>${i+1}</th>`).join("")}</tr>${E.map((a,i)=>`<tr><th>${i+1}</th>${E.map((b,k)=>`<td>${a==b?"—":IC[f(a,b).lv]}</td>`).join("")}</tr>`).join("")}</table></div><p class="sm">✅ OK · ⚠️ caution · ⛔ dangerous · ❔ not enough data</p></div>`;
+ P.filter(p=>p.lv!=1).forEach(p=>{h+=`<div class="card" style="border-left:5px solid ${LC[p.lv]}"><b>${nm(p.a)} + ${nm(p.b)}</b> <span class="lab ${p.lv==3?"d":"w"}">${IC[p.lv]} ${VT[p.lv]}</span><p><b>Why:</b> ${p.why}</p><p><b>What to do:</b> ${p.act}</p></div>`});
+ const okp=P.filter(p=>p.lv==1);if(okp.length)h+=`<div class="card" style="border-left:5px solid ${LC[1]}"><b>${IC[1]} No problem expected</b><p>${okp.map(p=>nm(p.a)+" + "+nm(p.b)).join("; ")}</p><p class="sm">${okp.some(p=>p.why.startsWith("Both are flammable"))?"Flammable pairs share a flammables cabinet but need ignition control. ":""}Based on hazard-class rules, not a guarantee.</p></div>`;
+ const G=[];E.forEach(e=>{const g=G.find(g=>g.every(o=>pairCheck(o,e).lv==1));g?g.push(e):G.push([e])});
+ h+=`<div class="card"><h3>Where to put them</h3>${G.map((g,i)=>`<div class="zone"><b>Cabinet / zone ${i+1}</b><br>${g.map(nm).join(", ")}<div class="sm">${[...new Set(g.flatMap(e=>[...e.s]))].map(x=>LBL[x]).join(" · ")||"class unknown"}</div></div>`).join("")}</div>`;
+ const b3=P.filter(p=>p.lv==3),b2=P.filter(p=>p.lv==2),b0=E.filter(e=>!e.s.size&&!e.c.ghs.found),all=new Set(E.flatMap(e=>[...e.s])),R=[];
+ const nn=ps=>ps.map(p=>nm(p.a)+" + "+nm(p.b)).join("; ");
+ if(b3.length)R.push(`⛔ <b>Never mix or store together:</b> ${nn(b3)}. Use different cabinets, ideally different rooms if a gas or a highly toxic chemical is involved.`);
+ if(b2.length)R.push(`⚠️ <b>Separate (own cabinet or tray):</b> ${nn(b2)}.`);
+ if(b0.length)R.push(`❔ <b>No hazard data for</b> ${b0.map(nm).join(", ")}: keep isolated until you have read the supplier SDS.`);
+ R.push(G.length>1?`Use <b>${G.length} separate zones</b> as listed above, each with its own spill tray.`:"All of these can share one ventilated cabinet or area with normal precautions.");
+ [...all].filter(x=>TIP[x]).forEach(x=>R.push(TIP[x]));
+ R.push("Label every container, keep the smallest practical quantity, store liquids below eye level, and never mix chemicals 'to test' them.");
+ R.push("Read SDS Sections 7 and 10 for each chemical and check NOAA CAMEO Chemicals before storing or mixing. These results come from GHS-code and chemical-class rules, not a full reactivity database.");
+ const top=b3.length?["#e5484d","⛔ Overall: NOT safe to keep all of these together."]:b2.length||b0.length?["#d98a00","⚠️ Overall: can share a room only if segregated as below."]:["#10a56b","✅ Overall: no incompatibility found by class rules (not a guarantee)."];
+ return h+`<div class="card" style="border-left:5px solid ${top[0]}"><h3>Recommendation</h3><p><b>${top[1]}</b></p>${R.map(x=>`<p>• ${x}</p>`).join("")}</div>`}
+async function runList(str,outSel){const o=$(outSel);o.innerHTML='<div class="card">Looking up chemicals in PubChem…</div>';try{const r=await many(str);if(!r.ok.length){o.innerHTML=`<div class="card warn">No chemicals found${r.bad.length?": "+esc(r.bad.join(", ")):""}. Enter names separated by commas.</div>`;return r}o.innerHTML=renderAnalysis(r.ok,r.bad);return r}catch(e){err(o,e)}}
+$("#cgo").onclick=()=>runList($("#cl").value,"#cout");$("#cl").onkeydown=e=>{if(e.key=="Enter")$("#cgo").click()};
+function drawStore(){const o=$("#sout");if(!inv.length){o.innerHTML='<div class="card sm">Inventory is empty. Add chemicals above (you can type several, separated by commas).</div>';return}
+ o.innerHTML=renderAnalysis(inv,[])+'<div class="card"><button class="p" onclick="inv=[];drawStore()">Clear inventory</button></div>'}
+$("#sadd").onclick=async()=>{const o=$("#sout");o.innerHTML='<div class="card">Looking up chemicals…</div>';try{const r=await many($("#si").value);r.ok.forEach(c=>{if(!inv.find(x=>x.cid==c.cid))inv.push(c)});$("#si").value="";drawStore();if(r.bad.length)o.insertAdjacentHTML("afterbegin",`<div class="card info">Could not find: <b>${r.bad.map(esc).join(", ")}</b></div>`)}catch(e){err(o,e)}};
+$("#si").onkeydown=e=>{if(e.key=="Enter")$("#sadd").click()};$("#sclr").onclick=()=>{inv=[];drawStore()};drawStore();
+// ---- emergency: chemical-specific ----
+function emergCard(c){const s=cls(c),d=derive(c),inc=incompat(s),vol=HC(c,/^H(220|221|224|225|280|330|331|335|336)$/),T=esc(c.pr.Title);
+ const R=[["Spill",d.spill.join(" ")],["Exposure",d.aid.join(" ")],["Fire",d.fire.join(" ")],
+ ["Leak / vapour",vol?"Evacuate upwind or crosswind, warn others, ventilate only if safe, no switches or flames (vapour can ignite), call emergency services. Vapour or gas can be heavier than air and collect in low areas.":"Low volatility by its GHS codes, but strong smell or irritation means leave, ventilate and call for help if the source cannot be isolated."],
+ ["Accidental mixing",inc.length?`Keep ${T} away from: ${inc.join(", ")}. If heat, gas, fumes or colour change appear, leave immediately and call for help; do not try to neutralise.`:"No class-specific incompatibility from GHS codes; still never mix chemicals to test them."],
+ ["Storage incident","If containers leak, swell, hiss or heat up: evacuate, isolate the area, tell responders exactly what is stored and give them the SDSs."+(s.has("WATERR")?" Tell them NOT to use water.":"")+(s.has("FLAM")?" Remove ignition sources if it is safe to do so.":"")]];
+ return`<div class="card warn"><h3>Emergency steps for ${T} <span class="lab">rule-based from its GHS codes</span></h3>${R.map(x=>`<p><b>${x[0]}:</b> ${esc(x[1])}</p>`).join("")}<p class="sm">If large, unknown or causing symptoms: leave, warn others and call your emergency number. Check the supplier SDS.</p></div>`}
+$("#eg").innerHTML=EG.map(g=>`<p><b>${g[0]}:</b> ${g[1]}</p>`).join("")+'<p class="sm">These are general first priorities. Look up a chemical below for steps specific to it.</p>';
+$("#eout").innerHTML='<div class="card sm">Look up a chemical to get spill, exposure, fire, leak, mixing and storage steps specific to it.</div>';
+$("#ego").onclick=async()=>{const o=$("#eout");o.innerHTML='<div class="card">Loading…</div>';try{cur=await fc($("#ei").value);o.innerHTML=`<div class="card"><b>${esc(cur.pr.Title)}</b> (CID ${cur.cid})</div>`+emergCard(cur)+hazPanel(cur)+await textPanel("aid","First aid texts reported in PubChem",null,1)+await textPanel("spill","Accidental-release texts reported in PubChem",null,1)}catch(e){err(o,e)}};
+$("#ei").onkeydown=e=>{if(e.key=="Enter")$("#ego").click()};
+// ---- report ----
+$("#rgo").onclick=async()=>{const o=$("#printarea");try{const c=await fc($("#ri").value);cur=c;const ks=["ppe","store","aid","spill","fire","env"];for(const k of ks)await textPanel(k,"");
+ const d=derive(c),s=cls(c),inc=incompat(s),ph=await Promise.all(PH.map(h=>heading(c.cid,h))),L=a=>a.length?"<ul>"+a.map(x=>`<li>${esc(x)}</li>`).join("")+"</ul>":"",
+ X=k=>L(d[k])+(cache[c.cid+k].items.length?"<p><i>Reported in PubChem:</i></p>"+L(cache[c.cid+k].items.slice(0,4).map(x=>x.t.slice(0,350)+" ("+(x.r?.n||"PubChem")+")")):""),
+ T={ppe:"PPE & handling",store:"Storage",aid:"First aid",spill:"Accidental release / spill",fire:"Fire fighting",env:"Environmental"};
+ o.innerHTML=`<h1>CHEMSAFE AI — Chemical Safety Profile</h1><p>${esc(c.pr.Title)} · generated ${new Date().toLocaleString()}</p>
+ <h2>Identification</h2><p>Formula ${esc(c.pr.MolecularFormula)}; MW ${esc(c.pr.MolecularWeight)}; CID ${c.cid}; CAS ${esc(c.cas.join(", ")||"not found")}; IUPAC ${esc(c.pr.IUPACName||"n/a")}</p><p>Also known as: ${c.syn.slice(0,8).map(esc).join("; ")}</p>
+ <h2>Hazard classification (PubChem GHS aggregate)</h2><p>Signal word: ${esc([...new Set(c.ghs.signal)].join("/")||"none listed")}. Hazard classes: ${[...s].map(x=>LBL[x]).join(", ")||"none identified"}.</p><ul>${c.ghs.H.map(h=>`<li>${esc(h.c)}: ${esc(ht(h))}</li>`).join("")||"<li>No GHS classification listed</li>"}</ul>
+ ${c.ghs.P.length?`<p>Precautionary codes: ${c.ghs.P.join(", ")}</p>`:""}
+ <h2>Physical properties</h2><ul>${PH.map((h,i)=>ph[i]&&ph[i][0]?`<li>${h}: ${esc(ph[i][0].t.slice(0,240))}</li>`:"").join("")||"<li>None reported</li>"}</ul>
+ ${ks.map(k=>`<h2>${T[k]}</h2>${X(k)}`).join("")}
+ <h2>Keep away from (incompatibilities)</h2><p>${inc.join(", ")||"No class-specific incompatibility from GHS codes; check SDS Section 10."}</p>
+ <h2>Sources &amp; limitations</h2><p>PubChem ${c.url}, retrieved ${c.t}. Bullets marked as rule-based are derived from the GHS codes above. Hazard classification is not workplace risk. This does not replace the supplier SDS, regulations or qualified professionals.</p>`;setTimeout(()=>print(),250)}catch(e){alert(e.message)}};
+// ---- accidents with photos, in-site ----
+const ACC=["Bhopal disaster","Texas City refinery explosion","2020 Beirut explosion","Flixborough disaster","Seveso disaster","2015 Tianjin explosions","West Fertilizer Company explosion","AZF (Toulouse) explosion","Buncefield fire","Minamata disease"];
+const LES={"Bhopal disaster":"Water entering a tank of methyl isocyanate drove a runaway reaction. Lessons: keep water-reactive chemicals dry, maintain safety systems, plan for emergencies and keep housing away from plants.","Texas City refinery explosion":"An overfilled column released flammable liquid that ignited. Lessons: reliable level alarms, no occupied trailers near hazards, strong process-safety management.","2020 Beirut explosion":"Ammonium nitrate (an oxidiser) was stored for years in a port warehouse. Lessons: regulate and inspect storage, limit quantities and keep oxidisers away from fuels.","Flixborough disaster":"A temporary bypass pipe failed and released cyclohexane. Lessons: manage every plant modification (management of change) and engineer it properly.","Seveso disaster":"A runaway reaction released dioxin. Lessons: control reactor temperatures and warn nearby communities quickly.","2015 Tianjin explosions":"Mixed hazardous chemicals, including water-reactive and oxidising ones, were stored together. Lessons: segregate by hazard class and know your inventory.","West Fertilizer Company explosion":"A fire in an ammonium nitrate store led to detonation. Lessons: emergency planning, firefighter awareness and distance from homes.","AZF (Toulouse) explosion":"Ammonium nitrate is thought to have been contaminated with incompatible chlorinated material. Lessons: never mix storage of incompatible products.","Buncefield fire":"An overfilled petrol tank released vapour that exploded. Lessons: independent high-level alarms and shut-offs."};
+$("#acch").innerHTML="<span class='sm'>Famous cases: </span>"+ACC.map(a=>`<span class="chip" data-a="${esc(a)}">${esc(a)}</span>`).join("");
+const wsum=async t=>{const r=await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(t.replace(/ /g,"_")));if(!r.ok)throw 0;return r.json()};
+async function accGo(q){q=q.trim();const o=$("#aout");if(!q){o.innerHTML='<div class="card warn">Enter a chemical, accident name, place or year.</div>';return}
+ o.innerHTML='<div class="card">Loading incident summaries…</div>';
+ try{let ts=ACC.filter(a=>a.toLowerCase().includes(q.toLowerCase()));
+  const d=await j("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=5&srsearch="+encodeURIComponent(q+" chemical accident OR explosion OR disaster OR toxic release"));
+  d.query.search.forEach(x=>{if(!ts.includes(x.title))ts.push(x.title)});
+  const S=(await Promise.allSettled(ts.slice(0,5).map(wsum))).filter(x=>x.status=="fulfilled").map(x=>x.value);
+  if(!S.length){o.innerHTML='<div class="card info">No incident summaries found. Try a different keyword (for example "ammonium nitrate" or "chlorine leak").</div>';return}
+  o.innerHTML=S.map(s=>{const im=s.originalimage?.source||s.thumbnail?.source;return`<div class="card">${im?`<img src="${esc(s.thumbnail?.source||im)}" alt="${esc(s.title)}" style="width:100%;max-height:340px;object-fit:cover;border-radius:14px;margin-bottom:8px">`:""}<h3>${esc(s.title)}</h3><p>${esc(s.extract)}</p>${LES[s.title]?`<p><b>Safety lessons:</b> ${LES[s.title]}</p>`:""}<p class="sm">Summary and photo: Wikipedia/Wikimedia Commons. For official findings read the CSB/HSE investigation report.</p></div>`}).join("")
+ }catch(e){o.innerHTML='<div class="card warn">Could not load incidents (check your internet connection).</div>'}}
+$("#ago").onclick=()=>accGo($("#ai").value);$("#ai").onkeydown=e=>{if(e.key=="Enter")accGo($("#ai").value)};
+document.addEventListener("click",e=>{const c=e.target.closest("#acch .chip");if(c){$("#ai").value=c.dataset.a;accGo(c.dataset.a)}});
+// ---- AI assistant ----
+const KB=[[/pictogram|hazard symbol/,"GHS pictograms: flame = flammable; flame over circle = oxidiser; corrosion = burns/corrosive to metals; skull and crossbones = acute toxicity; exclamation mark = irritant/harmful; health hazard = carcinogen, organ or respiratory toxicity; gas cylinder = gas under pressure; environment = aquatic toxicity; exploding bomb = explosive."],
+[/\bsds\b|safety data sheet/,"An SDS has 16 sections. Key ones: 2 hazards, 4 first aid, 5 firefighting, 6 accidental release, 7 handling and storage, 8 exposure controls/PPE, 10 stability and reactivity, 13 disposal. Always use the supplier's current SDS."],
+[/signal word/,"GHS signal words: “Danger” marks more severe hazards, “Warning” less severe ones. Some low-hazard products have none."],
+[/\b(h|p)[- ]?codes?\b|hazard statement|precautionary statement/,"H-codes describe hazards (H2xx physical, H3xx health, H4xx environmental). P-codes are precautions: P2xx prevention, P3xx response, P4xx storage, P5xx disposal."],
+[/acid.*water|water.*acid|dilut/,"When diluting, always add acid slowly to water (never water to acid), with stirring, goggles and gloves; the heat released can make concentrated acid spatter."],
+[/fume hood|fumehood/,"Use a fume hood for volatile, toxic, or irritating chemicals. Keep the sash low, work 15 cm inside, and keep clutter off the airfoil."],
+[/eyewash|safety shower/,"Eyewash and shower must be reachable in about 10 seconds. Rinse eyes or skin for at least 15 minutes, then get medical help."],
+[/ld50|lc50/,"LD50/LC50 is the dose or concentration that kills half of tested animals; lower numbers mean higher acute toxicity. It does not describe chronic hazards."],
+[/flash ?point/,"Flash point is the lowest temperature at which a liquid gives off enough vapour to ignite. Below about 23 °C is highly flammable (e.g. acetone)."],
+[/\bghs\b/,"GHS is the Globally Harmonized System for classifying and labelling chemicals: pictograms, signal words, H-statements and P-statements, plus the 16-section SDS."]];
+const STOP=/\b(can|could|should|would|shall|may|might|will|do|does|did|i|we|you|me|my|our|mix|mixed|mixing|store|stored|storing|keep|kept|put|place|placed|together|combine|combined|react|reacts|reaction|safe|safely|dangerous|compatible|compatibility|incompatible|is|are|am|was|it|its|this|that|these|those|the|a|an|of|to|in|on|at|for|by|as|about|tell|give|show|explain|please|what|which|how|why|when|where|if|then|happen|happens|there|be|get|use|using|used|hazard|hazards|ppe|precaution|precautions|handle|handling|first|aid|spill|spills|leak|leaks|fire|fires|extinguish|environment|environmental|disposal|dispose|toxic|toxicity|flammable|properties|property|formula|weight|boiling|melting|point|chemical|chemicals|same|shelf|cabinet|any|also|too|just|so|not|no|yes|ok|okay|need|want|know|wear|protective|equipment|gloves|glove|goggles|respirator|exposure|swallowed|inhaled|eye|eyes|skin|burn|burns|clean|cleanup|up|out|risk|risks|effects|effect|health|other|another|one|both|all|them|they|their|have|has|had|make|made|become)\b/g;
+const terms=q=>q.toLowerCase().replace(/[?!.]/g," ").split(/\b(?:and|with|plus|vs|versus|or|near|next to|beside|from)\b|[,+&\/]/).map(s=>s.replace(STOP," ").replace(/\s+/g," ").trim()).filter(s=>s.length>1).slice(0,4);
+const bl=a=>a.map(x=>"• "+esc(x)).join("<br>");
+async function answer(q){const l=q.toLowerCase().trim();
+ if(/^(hi|hello|hey|yo|hola|namaste|good (morning|afternoon|evening))\b/.test(l))return"Hello! I’m the CHEMSAFE assistant. Name a chemical and ask about hazards, PPE, storage, first aid, spills, fire, or ask “can I mix acetone and bleach?”. I can also compare several chemicals at once.";
+ if(/thank|thanks|thx/.test(l))return"You’re welcome! Ask me about another chemical any time.";
+ if(/who are you|what can you do|^help\b|what do you do/.test(l))return"I answer chemical-safety questions using live PubChem data plus built-in rules: hazards (GHS), PPE, storage, first aid, spills, fire fighting, environmental info, and what can safely be mixed or stored together. Set a chemical above or just name one.";
+ const kb=KB.find(k=>k[0].test(l));if(kb&&!/\b(of|for|about)\s+[a-z]{4,}/.test(l.replace(/(what|which) (is|are) (a|an|the)?/,"")))return kb[1];
+ const mixI=/mix|together|combin|react|compatib|safe with|next to|same (shelf|cabinet)|store .* with|put .* with|near/.test(l),hasIt=/\b(it|this|that|this chemical|the chemical)\b/.test(l);
+ let found=[],bad=[];for(const t of terms(q)){try{const c=await fc(t);if(!found.find(x=>x.cid==c.cid))found.push(c)}catch(e){bad.push(t)}}
+ if(mixI){let list=found.slice();if(ctxC&&!list.find(x=>x.cid==ctxC.cid)&&(hasIt||list.length<2))list.unshift(ctxC);
+  if(list.length<2)return`Which chemicals do you want to combine? For example: “can I mix ${ctxC?esc(ctxC.pr.Title.toLowerCase()):"acetone"} with bleach?”.`+(bad.length?` (I couldn’t find “${esc(bad.join(", "))}”.)`:"");
+  const E=list.map(c=>({c,s:cls(c)})),out=[];for(let i=0;i<E.length;i++)for(let k=i+1;k<E.length&&out.length<8;k++){const p=pairCheck(E[i],E[k]);out.push(`${IC[p.lv]} <b>${esc(E[i].c.pr.Title)} + ${esc(E[k].c.pr.Title)}</b>: ${VT[p.lv]}<br>${p.why}<br><i>What to do:</i> ${p.act}`)}
+  return out.join("<br><br>")+`<br><br><span class="sm">Based on PubChem GHS codes and chemical-class rules, not a full reactivity database. Check SDS Section 10 and CAMEO Chemicals. For many chemicals use the Storage Planner.</span>`}
+ let c=found[0]||ctxC;
+ if(!c)return bad.length?`I couldn’t find “${esc(bad[0])}” in PubChem. Try the common name, CAS number or formula.`:"Tell me which chemical you mean (for example “hazards of acetone”) or set one in the box above.";
+ if(found[0]&&!hasIt){ctxC=c;$("#cx").value=c.pr.Title}
+ cur=c;const d=derive(c),T=esc(c.pr.Title),foot=`<br><span class="sm">Source: PubChem (${c.url}) + rule-based guidance from its GHS codes. Does not replace the supplier SDS.</span>`,s=cls(c);
+ const ex=async k=>{cur=c;await textPanel(k,"");return cache[c.cid+k].items.slice(0,2).map(x=>x.t.length>260?x.t.slice(0,260)+"…":x.t)};
+ const A=async(lab,k)=>{const it=await ex(k);return`<b>${lab} — ${T}</b><br>${bl(d[k])}${it.length?"<br><br><i>Reported in PubChem:</i><br>"+bl(it):""}${foot}`};
+ if(/water|moisture/.test(l)){const w=c.ghs.H.filter(h=>/^(H260|H261|EUH014|EUH029)$/.test(h.c));return`<b>Water reactivity — ${T}</b><br>`+(w.length?"Reacts dangerously with water per GHS:<br>"+bl(w.map(h=>ht(h))):"No water-reactivity GHS code in PubChem, so it is not classified as reacting dangerously with water. Still check SDS Section 10.")+foot}
+ if(/ppe|glove|protect|respirator|goggle|wear/.test(l))return A("PPE","ppe");
+ if(/stor|keep/.test(l)){const i=incompat(s);return await A("Storage","store")+(i.length?`<br><b>Keep away from:</b> ${i.join(", ")}`:"")}
+ if(/first aid|swallow|inhal|\beye|skin|exposure|poison|burn/.test(l)&&!/fire|flame/.test(l))return A("First aid","aid");
+ if(/spill|leak|clean/.test(l))return A("Spill response","spill");
+ if(/fire|extinguish|ignit|flame|flammab|explo/.test(l))return A("Fire fighting","fire");
+ if(/environment|aquatic|eco\b/.test(l))return A("Environmental","env");
+ if(/dispos|waste|drain/.test(l))return`<b>Disposal — ${T}</b><br>Never pour chemicals down the drain unless the SDS allows it. Collect in a labelled, compatible waste container, keep incompatible wastes apart, and use a licensed hazardous-waste route (SDS Section 13).<br>${bl(d.env)}${foot}`;
+ if(/formula|weight|\bcas\b|iupac|propert|boiling|melting|density|solub/.test(l)){const r=await Promise.all(PH.map(h=>heading(c.cid,h)));return`<b>${T}</b><br>Formula ${esc(c.pr.MolecularFormula)} · MW ${esc(c.pr.MolecularWeight)} · CID ${c.cid} · CAS ${esc(c.cas.join(", ")||"not found")}<br>`+PH.map((h,i)=>r[i]&&r[i][0]?`${h}: ${esc(r[i][0].t.slice(0,160))}`:"").filter(Boolean).slice(0,5).join("<br>")+foot}
+ if(/precaution|handl/.test(l))return`<b>Handling — ${T}</b><br>${bl(d.ppe.slice(0,3).concat(d.store.slice(0,2)))}${foot}`;
+ const H=c.ghs.H;return`<b>Hazards — ${T}</b> (signal: ${esc([...new Set(c.ghs.signal)].join("/")||"n/a")})<br>`+(H.length?bl(H.slice(0,9).map(h=>h.c+": "+ht(h))):"No GHS classification listed in PubChem.")+`<br><b>Hazard classes:</b> ${[...s].map(x=>LBL[x]).join(", ")||"none identified"}<br><b>Key point:</b> ${esc((d.ppe[1]||d.ppe[0]))}<br><span class="sm">Inherent hazard, not workplace risk. Ask me about PPE, storage, first aid, spills, fire, or mixing.</span>${foot}`}
+async function send(t){t=t.trim();if(!t)return;$("#cm").value="";bub(esc(t),"me");const b=bub("Thinking…","bot");try{b.innerHTML=await answer(t)}catch(e){b.innerHTML="Sorry, I couldn’t get data just now ("+esc(e.message)+"). Check your connection and try again."}b.scrollIntoView({block:"end"})}
+$("#cset").onclick=async()=>{const q=$("#cx").value.trim();if(!q)return;const b=bub("Looking up…","bot");try{ctxC=await fc(q);b.innerHTML=`Context set to <b>${esc(ctxC.pr.Title)}</b> (CID ${ctxC.cid}). Ask about its hazards, PPE, storage, or “can I mix it with …?”.`}catch(e){b.textContent="I couldn’t find that chemical. "+e.message}};
+$("#csend").onclick=()=>send($("#cm").value);$("#cm").onkeydown=e=>{if(e.key=="Enter")send($("#cm").value)};
+document.querySelectorAll(".chips button").forEach(b=>b.onclick=()=>send(b.textContent));
+// ---- Learn: notes + endless live quiz ----
+const QP=["acetone","ethanol","methanol","sodium hydroxide","hydrochloric acid","sulfuric acid","nitric acid","ammonia","hydrogen peroxide","sodium hypochlorite","toluene","benzene","formaldehyde","chloroform","acetic acid","diethyl ether","hexane","phenol","chlorine","potassium permanganate","isopropanol","xylene","sodium cyanide","methyl isocyanate","acetonitrile","styrene","lithium","hydrofluoric acid","calcium carbide","sodium sulfide"];
+const HP=[["H300","Fatal if swallowed"],["H330","Fatal if inhaled"],["H314","Causes severe skin burns and eye damage"],["H225","Highly flammable liquid and vapour"],["H260","In contact with water releases flammable gases"],["H271","May cause fire or explosion; strong oxidiser"],["H350","May cause cancer"],["H360","May damage fertility or the unborn child"],["H400","Very toxic to aquatic life"],["H336","May cause drowsiness or dizziness"],["H319","Causes serious eye irritation"],["H290","May be corrosive to metals"]];
+FC.push(["H225","Highly flammable liquid and vapour"],["H314","Causes severe skin burns and eye damage"],["H330","Fatal if inhaled"],["P210","Keep away from heat, sparks, open flames; no smoking"],["SDS Section 7","Handling and storage"],["SDS Section 10","Stability and reactivity"],["Environment pictogram","Aquatic toxicity"],["Health hazard pictogram","Carcinogen / organ toxicity / respiratory sensitiser"]);
+const pick=a=>a[Math.random()*a.length|0],shuf=a=>a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+const qc=()=>fc(pick(QP));
+async function genQ(){for(let t=0;t<8;t++){try{const ty=pick(["sig","haz","flam","tox","pair","pair","pic"]);
+ if(ty=="pic"){const k=pick(FC.slice(0,6)),o=shuf(FC.slice(0,6).map(x=>x[1]).filter(x=>x!=k[1])).slice(0,2).concat(k[1]);return{q:`What does the “${k[0]}” GHS pictogram warn about?`,o,a:k[1],ex:`${k[0]}: ${k[1]}.`}}
+ if(ty=="pair"){const want=Math.random()<.5;for(let n=0;n<8;n++){const a=await qc(),b=await qc();if(a.cid==b.cid)continue;const A={c:a,s:cls(a)},B={c:b,s:cls(b)},p=pairCheck(A,B);if(p.lv==0||(p.lv>=2)!=want)continue;
+  return{q:`Can ${a.pr.Title} and ${b.pr.Title} be stored together?`,o:["Yes, with normal precautions","No, they must be kept apart"],a:p.lv>=2?"No, they must be kept apart":"Yes, with normal precautions",ex:`${p.why} ${p.act}`}}continue}
+ const c=await qc(),T=c.pr.Title;
+ if(ty=="sig"){const s=[...new Set(c.ghs.signal)];if(!s.length)continue;const a=s.includes("Danger")?"Danger":"Warning";return{q:`What GHS signal word does PubChem list for ${T}?`,o:["Danger","Warning","No signal word"],a,ex:`${T}: “${a}”. “Danger” is for more severe hazards, “Warning” for less severe ones.`}}
+ if(ty=="haz"){if(!c.ghs.H.length)continue;const h=pick(c.ghs.H),codes=c.ghs.H.map(x=>x.c),d=shuf(HP.filter(x=>!codes.includes(x[0]))).slice(0,2).map(x=>x[1]),a=ht(h);return{q:`Which hazard statement is officially listed for ${T}?`,o:d.concat(a),a,ex:`${h.c}: ${a}. PubChem lists ${c.ghs.H.length} hazard statements for ${T}.`}}
+ if(ty=="flam"){if(!c.ghs.found)continue;const f=cls(c).has("FLAM");return{q:`Is ${T} classified as a flammable (H220–H228) substance?`,o:["Yes","No"],a:f?"Yes":"No",ex:f?`${T} carries a flammability code, so keep it away from ignition sources and oxidisers.`:`${T} has no flammability H-code in PubChem, but check the SDS for other hazards.`}}
+ if(ty=="tox"){if(!c.ghs.found)continue;const f=cls(c).has("TOX");return{q:`Is ${T} classed as acutely toxic (fatal or toxic if swallowed, inhaled or on skin)?`,o:["Yes","No"],a:f?"Yes":"No",ex:f?`${T}: acute-toxicity codes found (${c.ghs.H.filter(h=>/^H(300|301|310|311|330|331)$/.test(h.c)).map(h=>h.c).join(", ")}).`:`${T}: no acute-toxicity H300/H310/H330-series code listed, but it may still be irritating or harmful.`}}
+ }catch(e){}}
+ const q=pick(QZ);return{q:q[0],o:q[1],a:q[1][q[2]],ex:q[3]}}
+const NOTES=`<div class="card"><h2>Read this first</h2>
+<p>• <b>Hazard ≠ risk.</b> Hazard is what a chemical can do; risk depends on quantity, exposure route, duration and controls.</p>
+<p>• <b>Pictograms:</b> flame = flammable; flame over circle = oxidiser; corrosion = burns; skull = acute toxicity; exclamation = irritant; health hazard = long-term/organ harm; environment = aquatic harm; gas cylinder = pressurised gas.</p>
+<p>• <b>Signal words:</b> “Danger” (severe) and “Warning” (less severe). <b>H-codes</b> say the hazard (H2xx physical, H3xx health, H4xx environment); <b>P-codes</b> say what to do.</p>
+<p>• <b>SDS:</b> 16 sections. 2 hazards, 4 first aid, 5 fire, 6 spills, 7 storage, 8 PPE, 10 reactivity, 13 disposal.</p>
+<p>• <b>Segregation:</b> acids apart from bases; oxidisers apart from fuels and solvents; water-reactive items dry; cyanides/sulfides never near acids; bleach never with ammonia or acids.</p>
+<p>• <b>Dilution:</b> add acid to water, never the reverse.</p>
+<p>• <b>Emergency:</b> large, unknown or symptom-causing incident: leave, warn others, call emergency services. Do not neutralise or clean up without training.</p>
+<p class="sm">The quiz is endless: questions are generated live from PubChem hazard data for about 30 common chemicals, plus the rules above.</p>
+<button class="p" id="qs">I’ve read it, start quiz →</button></div>`;
+function notes(){$("#lout").innerHTML=NOTES;$("#qs").onclick=runQuiz;scrollTo({top:$("#lout").offsetTop-80,behavior:"smooth"})}
+function quiz(){notes()}
+async function runQuiz(){const o=$("#lout");let n=0,sc=0,st=0,best=0,stop=0;
+ const next=async()=>{o.innerHTML='<div class="card">Getting a new question from PubChem…</div>';const Q=await genQ();if(stop)return;n++;const op=Q.o.length>2?shuf(Q.o):Q.o;
+  o.innerHTML=`<div class="card"><p class="sm">Question ${n} · score ${sc}/${n-1} · streak ${st}</p><h3>${esc(Q.q)}</h3>${op.map((x,k)=>`<button class="q" data-k="${k}">${esc(x)}</button>`).join("")}<p id="ex"></p></div>`;
+  o.querySelectorAll(".q").forEach(b=>b.onclick=()=>{const ok=op[+b.dataset.k]==Q.a;if(ok){sc++;st++;best=Math.max(best,st)}else st=0;
+   o.querySelectorAll(".q").forEach(x=>{x.disabled=true;if(op[+x.dataset.k]==Q.a)x.classList.add("right")});if(!ok)b.classList.add("bad");
+   $("#ex").innerHTML=`<b>${ok?"Correct!":"Not quite."}</b> ${esc(Q.ex)}<br><br><button class="p" id="nx">Next question</button> <button class="p" id="en">Finish</button>`;$("#nx").onclick=next;
+   $("#en").onclick=()=>{stop=1;o.innerHTML=`<div class="card"><h3>Score: ${sc}/${n}</h3><p>Best streak: ${best}</p><button class="p" onclick="notes()">Read notes again</button> <button class="p" onclick="runQuiz()">New quiz</button></div>`}})};
+ next()}
+</script>
+<script>
+/* v5b: fix leftover label + reset stale 3D leftovers */
+document.querySelectorAll("#cout,#sout").forEach(e=>e.innerHTML="");drawStore();
+</script>
+<script>
+/* ===== v6: no 3D on tool pages (hero blob kept); factor-by-factor comparison with ratings, bars and radar ===== */
+document.querySelectorAll(".v3:not(.blob)").forEach(e=>e.remove());
+mount("v-hero",heroB,{z:6.2,pass:true});mount("v-ab",aboutB,{z:6.2,pass:true});
+const LV=["None listed","Low","Moderate","High","Severe"],LCOL=["#10a56b","#8bc34a","#d98a00","#f0642d","#e5484d"];
+const FAC=[
+["Acute toxicity",{4:/^H(300|310|330)$/,3:/^H(301|311|331)$/,2:/^H(302|312|332)$/,1:/^H(303|313|333)$/},"Harm from one swallow, skin contact or breath"],
+["Inhalation / respiratory",{4:/^H330$/,3:/^H(331|334)$/,2:/^H332$/,1:/^H(335|336)$/},"Vapour, dust or gas hazard"],
+["Skin & eye damage",{4:/^H314$/,3:/^H318$/,2:/^H(315|319)$/,1:/^H317$/},"Burns, irritation, allergy"],
+["Long-term health",{4:/^H(340|350|360)/,3:/^H(341|351|361|362|370|372)$/,2:/^H(371|373|304)$/},"Cancer, mutation, fertility, organ damage"],
+["Flammability",{4:/^H(220|224)$/,3:/^H(222|223|225)$/,2:/^H(226|228)$/,1:/^H227$/},"Fire risk"],
+["Reactivity / explosivity",{4:/^H(200|201|202|203|204|205|240|241|250|260|270|271)$|^EUH032$/,3:/^H(242|251|261)$|^EUH(014|029|031)$/,2:/^H(252|272)$/,1:/^H(280|281|290)$/},"Explosive, water-reactive, oxidising, corrosive to metals"],
+["Environmental harm",{4:/^H410$/,3:/^H(400|411|420)$/,2:/^H(401|412)$/,1:/^H(402|413)$/},"Harm to water life and ozone"]];
+function rateF(c,f){if(!c.ghs.found)return{v:null,codes:[]};let v=0;const codes=[];
+ c.ghs.H.forEach(h=>{for(const k of [4,3,2,1])if(f[1][k]&&f[1][k].test(h.c)){codes.push(h.c);if(+k>v)v=+k;break}});return{v,codes}}
+function radar(a,b,ra,rb){const n=FAC.length,C=170,R=110,pt=(i,r)=>{const t=-Math.PI/2+i*2*Math.PI/n;return[C+r*Math.cos(t),C+r*Math.sin(t)]};
+ const poly=(r,col)=>`<polygon points="${r.map((x,i)=>pt(i,(x.v||0)/4*R).join(",")).join(" ")}" fill="${col}" fill-opacity=".28" stroke="${col}" stroke-width="2"/>`;
+ let g="";[1,2,3,4].forEach(k=>g+=`<polygon points="${FAC.map((_,i)=>pt(i,k/4*R).join(",")).join(" ")}" fill="none" stroke="currentColor" stroke-opacity=".18"/>`);
+ FAC.forEach((f,i)=>{const e=pt(i,R),l=pt(i,R+22);g+=`<line x1="${C}" y1="${C}" x2="${e[0]}" y2="${e[1]}" stroke="currentColor" stroke-opacity=".18"/><text x="${l[0]}" y="${l[1]}" font-size="10" text-anchor="middle" dominant-baseline="middle" fill="currentColor">${esc(f[0].split(" ")[0])}</text>`});
+ return`<svg viewBox="0 0 340 340" style="width:100%;max-width:380px;display:block;margin:auto" role="img" aria-label="Radar chart of hazard ratings">${g}${poly(ra,"#d946a8")}${poly(rb,"#2fb386")}</svg>
+ <div style="text-align:center" class="sm"><span style="color:#d946a8">■</span> ${esc(a.pr.Title)} &nbsp; <span style="color:#2fb386">■</span> ${esc(b.pr.Title)} &nbsp; (centre = none, edge = severe)</div>`}
+const bar=r=>r.v===null?'<span class="lab w">No GHS data</span>':`<div style="background:#9bb0a533;border-radius:6px;height:14px;overflow:hidden"><div style="width:${Math.max(r.v,.35)/4*100}%;height:100%;background:${LCOL[r.v]}"></div></div><div class="sm"><b style="color:${LCOL[r.v]}">${LV[r.v]}</b>${r.codes.length?" · "+r.codes.join(", "):""}</div>`;
+const PCMP=["Physical Description","Boiling Point","Melting Point","Flash Point","Density","Solubility","Vapor Pressure"];
+async function compareHTML(a,b,o){o=o||{};const ra=FAC.map(f=>rateF(a,f)),rb=FAC.map(f=>rateF(b,f)),sum=r=>r.reduce((s,x)=>s+(x.v||0),0),sa=sum(ra),sb=sum(rb),mx=FAC.length*4,pa=Math.round(sa/mx*100),pb=Math.round(sb/mx*100);
+ const [pha,phb]=await Promise.all([PCMP,PCMP].map((L,i)=>Promise.all(L.map(h=>heading((i?b:a).cid,h)))));
+ const A=esc(a.pr.Title),B=esc(b.pr.Title),tag=c=>[...cls(c)].map(x=>`<span class="lab">${LBL[x]}</span>`).join("")||'<span class="lab w">no class identified</span>';
+ let h=`<div class="card"><h3>${o.title||"Overview"}</h3><table class="tbl"><tr><th></th><th>${A}</th><th>${B}</th></tr>
+ <tr><td>Formula</td><td>${esc(a.pr.MolecularFormula)}</td><td>${esc(b.pr.MolecularFormula)}</td></tr>
+ <tr><td>Molecular weight</td><td>${esc(a.pr.MolecularWeight)}</td><td>${esc(b.pr.MolecularWeight)}</td></tr>
+ <tr><td>CAS</td><td>${esc(a.cas[0]||"n/a")}</td><td>${esc(b.cas[0]||"n/a")}</td></tr>
+ <tr><td>Signal word</td><td>${esc([...new Set(a.ghs.signal)].join("/")||"none")}</td><td>${esc([...new Set(b.ghs.signal)].join("/")||"none")}</td></tr>
+ <tr><td>Hazard classes</td><td>${tag(a)}</td><td>${tag(b)}</td></tr>
+ <tr><td>GHS pictograms</td><td>${a.ghs.pics.map(p=>`<img src="${esc(p.u)}" width="38" alt="${esc(p.l)}" title="${esc(p.l)}">`).join("")||"–"}</td><td>${b.ghs.pics.map(p=>`<img src="${esc(p.u)}" width="38" alt="${esc(p.l)}" title="${esc(p.l)}">`).join("")||"–"}</td></tr></table></div>`;
+ h+=`<div class="card"><h3>Overall hazard index</h3><p class="sm">Sum of the 7 factor ratings below as a % of the maximum. A screening number built from GHS codes, not an official score.</p>
+ <div>${A}: <b>${pa}%</b><div style="background:#9bb0a533;border-radius:8px;height:18px"><div style="width:${pa}%;height:100%;border-radius:8px;background:#d946a8"></div></div></div>
+ <div style="margin-top:8px">${B}: <b>${pb}%</b><div style="background:#9bb0a533;border-radius:8px;height:18px"><div style="width:${pb}%;height:100%;border-radius:8px;background:#2fb386"></div></div></div></div>`;
+ h+=`<div class="card"><h3>Hazard profile</h3>${radar(a,b,ra,rb)}</div>`;
+ h+=`<div class="card"><h3>Factor by factor</h3><div style="overflow-x:auto"><table class="tbl"><tr><th>Factor</th><th>${A}</th><th>${B}</th><th>Higher</th></tr>`+FAC.map((f,i)=>{const x=ra[i],y=rb[i],w=x.v===null||y.v===null?"?":x.v==y.v?"Equal":x.v>y.v?A:B;return`<tr><td><b>${f[0]}</b><div class="sm">${f[2]}</div></td><td>${bar(x)}</td><td>${bar(y)}</td><td>${w}</td></tr>`}).join("")+`</table></div></div>`;
+ h+=`<div class="card"><h3>Physical properties (PubChem)</h3><table class="tbl"><tr><th></th><th>${A}</th><th>${B}</th></tr>`+PCMP.map((p,i)=>`<tr><td>${p}</td><td>${pha[i]&&pha[i][0]?esc(pha[i][0].t.slice(0,150)):"–"}</td><td>${phb[i]&&phb[i][0]?esc(phb[i][0].t.slice(0,150)):"–"}</td></tr>`).join("")+`</table></div>`;
+ const pc=pairCheck({c:a,s:cls(a)},{c:b,s:cls(b)});
+ h+=`<div class="card" style="border-left:5px solid ${LC[pc.lv]}"><h3>Can they be stored or mixed together?</h3><p>${IC[pc.lv]} <b>${VT[pc.lv]}</b></p><p>${pc.why}</p><p><b>What to do:</b> ${pc.act}</p></div>`;
+ const top=(r,n)=>FAC.map((f,i)=>[f[0],r[i].v]).filter(x=>x[1]>=3).sort((x,y)=>y[1]-x[1]).slice(0,n).map(x=>`${x[0].toLowerCase()} (${LV[x[1]].toLowerCase()})`);
+ const ta=top(ra,3),tb=top(rb,3),nd=[a,b].filter(c=>!c.ghs.found).map(c=>esc(c.pr.Title));
+ const verdict=nd.length?`No GHS data for ${nd.join(", ")}, so a fair comparison is not possible. Use the supplier SDS.`:sa==sb?`Both score the same on this screening (${pa}%), but they differ by factor; look at the table.`:`On this screening <b>${sa>sb?A:B}</b> has the higher overall hazard (${Math.max(pa,pb)}% vs ${Math.min(pa,pb)}%).`;
+ h+=`<div class="card info"><h3>Recommendation</h3><p>${verdict}</p>
+ <p>• <b>${A}</b>: ${ta.length?"main concerns are "+ta.join(", "):"no high or severe factor listed"}.</p><p>• <b>${B}</b>: ${tb.length?"main concerns are "+tb.join(", "):"no high or severe factor listed"}.</p>
+ ${o.foot||"<p>• A lower score does not make a chemical safe or suitable: quantity, concentration, exposure route and controls decide the real risk, and a small hazard index can hide one severe factor.</p>"}
+ <p class="sm">Source: PubChem GHS data retrieved ${a.t}. Check the supplier SDS before choosing or substituting.</p></div>`;return h}
+$("#pgo").onclick=async()=>{const o=$("#pout");o.innerHTML='<div class="card">Comparing…</div>';try{const [a,b]=await Promise.all([fc($("#pa").value),fc($("#pb").value)]);o.innerHTML=await compareHTML(a,b)}catch(e){err(o,e)}};
+$("#pb").onkeydown=$("#pa").onkeydown=e=>{if(e.key=="Enter")$("#pgo").click()};
+$("#ggo").onclick=async()=>{const o=$("#gout");o.innerHTML='<div class="card">Comparing…</div>';try{const [a,b]=await Promise.all([fc($("#ga").value),fc($("#gb").value)]);
+ o.innerHTML=await compareHTML(a,b,{title:`${esc(a.pr.Title)} → ${esc(b.pr.Title)} for: ${esc($("#gu").value||"use not stated")}`,foot:"<p>• Fewer or lower-rated hazards in the candidate is a good sign, but performance for your use, persistence, disposal and lifecycle must be checked separately. Not a substitution approval.</p>"})}catch(e){err(o,e)}};
+/* remove any empty 3D boxes created by the old renderers */
+const _r=render;render=function(c){return _r(c).replace(/<div id="v-mol"[^>]*><\/div>/,"")};
+</script>
+<script>
+/* ===== Green alternatives: enter a chemical, system proposes and ranks substitutes ===== */
+const SUB=[
+[/benzene$/,[["toluene","Removes benzene's carcinogen/mutagen classification; still a flammable aromatic solvent"],["heptane","Non-aromatic hydrocarbon for extraction and cleaning"]]],
+[/dichloromethane|methylene chloride|^dcm$/,[["ethyl acetate","Common replacement for extraction and chromatography; not a halogenated solvent"],["2-methyltetrahydrofuran","Bio-derived ether solvent used in place of DCM/THF in many reactions"]]],
+[/chloroform|dichloroethane/,[["ethyl acetate","Replaces chloroform in many extractions and chromatography"],["2-methyltetrahydrofuran","Bio-derived ether solvent"]]],
+[/carbon tetrachloride|tetrachloromethane/,[["heptane","Non-halogenated, no ozone-depleting potential"],["ethyl acetate","Non-halogenated polar solvent"]]],
+[/trichloroethylene|trichloroethene|tetrachloroethylene|perchloroethylene/,[["ethyl lactate","Bio-based degreasing solvent"],["limonene","Citrus-derived degreasing solvent"]]],
+[/^n-?hexane$|^hexane$/,[["heptane","Same use as hexane without hexane's specific neurotoxicity classification"]]],
+[/^toluene$|^xylene|xylol/,[["ethyl acetate","Lower chronic-toxicity solvent for many cleaning and coating uses"],["ethyl lactate","Bio-based solvent"]]],
+[/diethyl ether|ethyl ether/,[["2-methyltetrahydrofuran","Less peroxide-prone, higher flash point ether replacement"],["cyclopentyl methyl ether","Low peroxide formation, hydrophobic ether solvent"]]],
+[/tetrahydrofuran|^thf$/,[["2-methyltetrahydrofuran","Bio-derived drop-in for many THF uses"],["cyclopentyl methyl ether","Low peroxide formation"]]],
+[/1,4-dioxane|dioxane/,[["2-methyltetrahydrofuran","Replaces dioxane as a reaction solvent in many cases"]]],
+[/dimethylformamide|^dmf$/,[["dimethyl sulfoxide","Polar aprotic alternative without DMF's reproductive-toxicity classification"],["dihydrolevoglucosenone","Bio-based dipolar aprotic solvent (Cyrene)"]]],
+[/methyl-2-pyrrolidone|^nmp$|methylpyrrolidone/,[["dimethyl sulfoxide","Polar aprotic alternative"],["dihydrolevoglucosenone","Bio-based dipolar aprotic solvent (Cyrene)"]]],
+[/^methanol$|methyl alcohol/,[["ethanol","Far lower acute toxicity (no optic-nerve toxicity)"]]],
+[/acetonitrile/,[["ethanol","Used as an HPLC solvent replacement in many methods"],["ethyl acetate","Alternative for extractions"]]],
+[/^acetone$/,[["ethyl lactate","Bio-based, lower-volatility solvent for cleaning"]]],
+[/hypochlorite|bleach/,[["hydrogen peroxide","Breaks down to water and oxygen; used for disinfection and stain removal"],["citric acid","Mild descaler/cleaner (never mix with bleach)"]]],
+[/hydrochloric acid|muriatic/,[["citric acid","Common descaling replacement"],["lactic acid","Milder organic acid for descaling"]]],
+[/sodium hydroxide|caustic soda|^lye$/,[["sodium carbonate","Much milder alkaline cleaner"],["sodium bicarbonate","Mild alkali for light cleaning"]]],
+[/pentane/,[["heptane","Less volatile, higher flash point replacement"]]],
+[/diisopropyl ether|isopropyl ether/,[["2-methyltetrahydrofuran","Lower peroxide risk ether solvent"]]],
+[/dimethylacetamide|^dmac$/,[["dimethyl sulfoxide","Polar aprotic alternative"],["dihydrolevoglucosenone","Bio-based dipolar aprotic solvent (Cyrene)"]]],
+[/ethylene glycol/,[["propylene glycol","Much lower toxicity if ingested; common antifreeze/humectant substitute"]]],
+[/methyl ethyl ketone|butanone|^mek$/,[["ethyl acetate","Lower-toxicity solvent for coatings and cleaning"],["ethyl lactate","Bio-based solvent"]]],
+[/sulfuric acid|nitric acid/,[["citric acid","Mild descaling/cleaning replacement where strong acid is not essential"],["lactic acid","Milder organic acid"]]],
+[/^ammonia$|ammonium hydroxide/,[["sodium carbonate","Alkaline cleaner without ammonia vapour"],["sodium bicarbonate","Mild cleaner"]]],
+];
+const gIdx=c=>{if(!c.ghs.found)return null;const r=FAC.map(f=>rateF(c,f));return{r,p:Math.round(r.reduce((s,x)=>s+(x.v||0),0)/(FAC.length*4)*100)}};
+const GFULL={};
+async function gFull(k,btn){const o=document.getElementById("gf"+k);btn.disabled=true;o.innerHTML="Loading…";try{o.innerHTML=await compareHTML(GFULL[k][0],GFULL[k][1])}catch(e){o.innerHTML=esc(e.message)}}
+function gCard(k,a,ia,b,ib,why){
+ const t=esc(b.pr.Title);
+ if(!ib)return`<div class="card"><h3>${t}</h3><p>${esc(why||"Your candidate")}</p><p class="lab w">No GHS data retrieved for this candidate: insufficient information, not proof of safety.</p></div>`;
+ const d=ia?ib.p-ia.p:null,tone=d===null?"":d<0?"#10a56b":d>0?"#e5484d":"#d98a00";
+ const verdict=d===null?"Original has no GHS data to compare":d<0?`${-d} points lower hazard index than the original`:d>0?`${d} points HIGHER hazard index than the original`:"Same hazard index as the original";
+ const ch=ia?FAC.map((f,i)=>{const x=ia.r[i].v||0,y=ib.r[i].v||0;return y<x?`<span class="lab" style="border-color:#10a56b">${esc(f[0])} ↓</span>`:y>x?`<span class="lab w">${esc(f[0])} ↑</span>`:""}).join(" "):"";
+ GFULL[k]=[a,b];
+ return`<div class="card"><h3>${t} <span class="sm">· ${esc(b.pr.MolecularFormula)}</span></h3>
+ <p>${esc(why||"Your candidate")}</p>
+ <div>Hazard index: <b>${ib.p}%</b> <span style="color:${tone}">— ${verdict}</span><div style="background:#9bb0a533;border-radius:8px;height:14px"><div style="width:${ib.p}%;height:100%;border-radius:8px;background:${tone||"#d946a8"}"></div></div></div>
+ <p class="sm">Factors changed vs original: ${ch||"none"} (↓ better, ↑ worse)</p>
+ <button class="p" onclick="gFull('${k}',this)">Full side-by-side</button><div id="gf${k}"></div></div>`}
+const ALTUSE={"ethyl acetate":["Extraction","Chromatography","Cleaning","Coating","Reaction"],"2-methyltetrahydrofuran":["Reaction","Extraction"],"cyclopentyl methyl ether":["Reaction","Extraction"],"heptane":["Extraction","Chromatography","Cleaning","Degreasing","Coating"],"toluene":["Reaction","Extraction","Coating"],"ethanol":["Cleaning","Extraction","Chromatography","Disinfection","Reaction"],"ethyl lactate":["Cleaning","Degreasing","Coating"],"limonene":["Cleaning","Degreasing"],"dimethyl sulfoxide":["Reaction"],"dihydrolevoglucosenone":["Reaction"],"hydrogen peroxide":["Disinfection","Cleaning"],"citric acid":["Descaling","Cleaning"],"lactic acid":["Descaling","Cleaning","Disinfection"],"sodium carbonate":["Cleaning"],"sodium bicarbonate":["Cleaning"],"propylene glycol":["Antifreeze"]};
+const PURP=[[/clean|wash|stain|wipe|detergent/,"Cleaning"],[/degreas|grease|oil|wax/,"Degreasing"],[/extract/,"Extraction"],[/hplc|chromat|lcms|column|mobile phase/,"Chromatography"],[/react|synth|solvent|dissol/,"Reaction"],[/paint|coat|thinner|varnish|ink|lacquer|adhesive/,"Coating"],[/scale|descal|rust|etch/,"Descaling"],[/disinfect|steril|sanit|bacteria|germ/,"Disinfection"],[/antifreeze|coolant|de-?ic/,"Antifreeze"]];
+const gPurp=t=>{t=t.toLowerCase();return[...new Set(PURP.filter(x=>x[0].test(t)).map(x=>x[1]))]};
+let _gt;
+$("#ga").addEventListener("input",()=>{clearTimeout(_gt);const v=$("#ga").value.trim();if(v.length<2){$("#gprev").textContent="";return}
+ _gt=setTimeout(async()=>{try{const d=await j("https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/"+encodeURIComponent(v)+"/json?limit=8");
+  $("#gal").innerHTML=((d.dictionary_terms||{}).compound||[]).map(x=>`<option value="${esc(x)}">`).join("")}catch(e){}
+  try{const c=await fc(v);$("#gprev").innerHTML=`Chemical found: <b>${esc(c.pr.Title)}</b> · ${esc(c.pr.MolecularFormula)} · CID ${c.cid}`}catch(e){$("#gprev").textContent="No exact chemical match yet…"}},350)});
+function gClass(a){const f=a.pr.MolecularFormula||"",H=a.ghs.H.map(h=>h.c),t=a.pr.Title.toLowerCase(),cm=f.match(/C(\d*)(?![a-z])/),nC=cm?(cm[1]?+cm[1]:1):0;
+ if(/Hg|Pb|Cd|As|Cr|Ni|Co|Be|Tl|Sb|Se|Ba|Os|Pt/.test(f))return null;
+ if(nC&&nC<=4&&/Cl|Br/.test(f))return["Class-level suggestion for small halogenated solvents",[["ethyl acetate","Non-halogenated solvent for many extractions and cleaning uses"],["2-methyltetrahydrofuran","Bio-derived ether solvent"],["heptane","Non-halogenated hydrocarbon"]]];
+ if(H.some(h=>/^H22[456]$/.test(h))&&/^[CHO\d]+$/.test(f)&&nC>=2&&nC<=9)return["Class-level suggestion for flammable organic solvents",[["ethanol","Lower-toxicity bio-based solvent"],["ethyl acetate","Common lower-toxicity solvent"],["ethyl lactate","Bio-based, higher flash point"]]];
+ if(H.includes("H314")&&/acid$/.test(t))return["Class-level suggestion for corrosive acids",[["citric acid","Mild acid for descaling/cleaning"],["lactic acid","Milder organic acid"]]];
+ if(H.includes("H314")&&/hydroxide/.test(t))return["Class-level suggestion for corrosive alkalis",[["sodium carbonate","Milder alkaline cleaner"],["sodium bicarbonate","Mild alkali"]]];
+ return null}
+$("#ggo").onclick=async()=>{const o=$("#gout"),q=$("#ga").value.trim();
+ if(!q){o.innerHTML='<div class="card warn">Enter the chemical you want to replace.</div>';return}
+ o.innerHTML='<div class="card">Looking up the chemical and its alternatives…</div>';
+ try{const a=await fc(q),ia=gIdx(a),names=(q+" "+a.pr.Title).toLowerCase();
+  let cands=(SUB.find(x=>x[0].test(names))||[])[1],lab="";
+  if(!cands){const g=gClass(a);if(g){lab=g[0];cands=g[1]}}
+  const head=`<div class="card"><h3>Replacing: ${esc(a.pr.Title)}</h3><p>Original hazard index: <b>${ia?ia.p+"%":"no GHS data"}</b> <span class="sm">(sum of 7 GHS-based factor ratings as % of maximum; a screening number, not an official score)</span></p>${lab?`<p class="sm">${esc(lab)}: these are not specific to this chemical, so check suitability carefully.</p>`:""}</div>`;
+  if(!cands||!cands.length){o.innerHTML=head+`<div class="card info"><h3>No green alternative on file for ${esc(a.pr.Title)}</h3><p>It isn't in the curated substitution list and doesn't match a class rule, and no open database reliably maps substitutes for every chemical, so none is invented. Check the ACS Green Chemistry Institute solvent guides, the supplier's SDS (Section 15) or a substitution database such as the Substitution Support Portal (SUBSPORT).</p></div>`;return}
+  const res=await Promise.allSettled(cands.map(c=>fc(c[0])));
+  const purp=$("#gu").value.trim(),cats=gPurp(purp);
+  let rows=res.map((r,i)=>r.status=="fulfilled"&&r.value.cid!=a.cid?{b:r.value,ib:gIdx(r.value),why:cands[i][1],use:ALTUSE[cands[i][0]]||[]}:null).filter(Boolean);
+  const fit=r=>!cats.length||r.use.some(u=>cats.includes(u));
+  const byIdx=(x,y)=>(x.ib?x.ib.p:999)-(y.ib?y.ib.p:999);
+  const good=rows.filter(fit).sort(byIdx),other=rows.filter(r=>!fit(r)).sort(byIdx);
+  const best=good.find(r=>r.ib&&ia&&r.ib.p<ia.p);
+  const pn=purp?`<span class="lab">purpose: ${esc(purp)}</span> `:"";
+  const note=purp&&!cats.length?`<p class="sm">Purpose "${esc(purp)}" isn't one I can match to a use, so all suggestions are shown. Try words like cleaning, extraction, reaction, descaling or disinfection.</p>`:"";
+  let html=head.replace("</div>",note+"</div>").replace("</h3>","</h3>"+(pn?"<p>"+pn+"</p>":""));
+  if(!rows.length)html+='<div class="card warn">Could not retrieve data for the suggested alternatives.</div>';
+  else{
+   html+=`<div class="card ok"><b>${best?`Greener pick${purp?` for ${esc(purp)}`:""}: ${esc(best.b.pr.Title)}`:good.length?"None of the suitable alternatives scores lower than the original":`No curated alternative is usually used for ${esc(purp)}`}</b><span class="sm"> Ranked lowest to highest hazard index. Source: PubChem GHS data, retrieved ${esc(a.t)}.</span></div>`;
+   good.forEach((r,i)=>{html+=gCard(i,a,ia,r.b,r.ib,r.why+(cats.length?` Typical uses: ${r.use.join(", ")}.`:""))});
+   if(other.length&&cats.length){html+=`<div class="card"><h3>Other lower-hazard options (not typically used for ${esc(purp)})</h3></div>`;other.forEach((r,i)=>{html+=gCard(100+i,a,ia,r.b,r.ib,r.why+` Typical uses: ${r.use.join(", ")||"not specified"}.`)})}
+   html+=`<div class="card info"><p class="sm">A lower hazard index is a good sign, not an approval: performance for your use, severity, persistence, disposal, cost and lifecycle must be checked separately. Suggestions are starting points, not a recommendation.</p></div>`}
+  o.innerHTML=html
+ }catch(e){err(o,e)}};
+$("#ga").onkeydown=e=>{if(e.key=="Enter")$("#ggo").click()};
+</script>
+<script>
+/* ===== Accident cards: no repeated photos, contained image size, no "List of" pages ===== */
+const wmedia=async t=>{const r=await fetch("https://en.wikipedia.org/api/rest_v1/page/media-list/"+encodeURIComponent(t.replace(/ /g,"_")));if(!r.ok)return[];const d=await r.json();return(d.items||[]).filter(i=>i.type=="image"&&/\.(jpe?g|png)$/i.test(i.title||"")&&(i.srcset||[]).length)};
+const fnorm=u=>decodeURIComponent(String(u).split("/").pop()).replace(/^File:/,"").replace(/^\d+px-/,"").replace(/_/g," ").toLowerCase();
+async function accGo(q){q=q.trim();const o=$("#aout");if(!q){o.innerHTML='<div class="card warn">Enter a chemical, accident name, place or year.</div>';return}
+ o.innerHTML='<div class="card">Loading incident summaries…</div>';
+ try{let ts=ACC.filter(a=>a.toLowerCase().includes(q.toLowerCase()));
+  const d=await j("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=8&srsearch="+encodeURIComponent(q+" chemical accident OR explosion OR disaster OR toxic release"));
+  d.query.search.forEach(x=>{if(!ts.includes(x.title)&&!/^(list of|lists of|outline of|timeline of)/i.test(x.title))ts.push(x.title)});
+  const S=(await Promise.allSettled(ts.slice(0,5).map(wsum))).filter(x=>x.status=="fulfilled").map(x=>x.value);
+  if(!S.length){o.innerHTML='<div class="card info">No incident summaries found. Try a different keyword (for example "ammonium nitrate" or "chlorine leak").</div>';return}
+  const used=new Set(),imgs=[];
+  for(const s of S){let u=null;const first=s.thumbnail?.source||s.originalimage?.source;
+   if(first&&!used.has(fnorm(s.originalimage?.source||first))){u=first;used.add(fnorm(s.originalimage?.source||first))}
+   else{try{const m=await wmedia(s.title);for(const i of m){const k=fnorm(i.title);if(!used.has(k)){used.add(k);u=(i.srcset.find(x=>x.scale=="1x")||i.srcset[0]).src;if(u.startsWith("//"))u="https:"+u;break}}}catch(e){}}
+   imgs.push(u)}
+  o.innerHTML=S.map((s,i)=>`<div class="card">${imgs[i]?`<div style="height:220px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:8px"><img src="${esc(imgs[i])}" alt="${esc(s.title)}" loading="lazy" style="max-width:100%;max-height:220px;width:auto;height:auto;object-fit:contain"></div>`:""}<h3>${esc(s.title)}</h3><p>${esc(s.extract)}</p>${LES[s.title]?`<p><b>Safety lessons:</b> ${LES[s.title]}</p>`:""}<p class="sm">Summary and photo: Wikipedia/Wikimedia Commons. For official findings read the CSB/HSE investigation report.</p></div>`).join("")
+ }catch(e){o.innerHTML='<div class="card warn">Could not load incidents (check your internet connection).</div>'}}
+</script>
+<script>
+/* ===== Scan & Ask: label photo + voice in any language, AI reply in same language ===== */
+const LANGS=[["en-IN","English","English"],["hi-IN","हिन्दी","Hindi"],["ta-IN","தமிழ்","Tamil"],["te-IN","తెలుగు","Telugu"],["bn-IN","বাংলা","Bengali"],["mr-IN","मराठी","Marathi"],["gu-IN","ગુજરાતી","Gujarati"],["kn-IN","ಕನ್ನಡ","Kannada"],["ml-IN","മലയാളം","Malayalam"],["pa-IN","ਪੰਜਾਬੀ","Punjabi"],["ur-IN","اردو","Urdu"],["es-ES","Español","Spanish"],["fr-FR","Français","French"],["pt-BR","Português","Portuguese"],["sw-KE","Kiswahili","Swahili"]];
+$("#sl").innerHTML=LANGS.map(l=>`<option value="${l[0]}">${l[1]} (${l[2]})</option>`).join("");
+let SIMG=null,SLAST=null;
+$("#sf").onchange=e=>{const f=e.target.files[0];if(!f){SIMG=null;$("#sp").style.display="none";return}
+ const im=new Image(),u=URL.createObjectURL(f);
+ im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);const d=c.toDataURL("image/jpeg",.85);SIMG=d.split(",")[1];$("#sp").src=d;$("#sp").style.display="block";URL.revokeObjectURL(u)};
+ im.onerror=()=>{SIMG=null;$("#sout").innerHTML='<div class="card warn">That file could not be read as an image. Try another photo.</div>'};im.src=u};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$("#smic").onclick=()=>{const b=$("#smic");
+ if(!SR){$("#sout").innerHTML='<div class="card warn">Voice input is not available in this browser (Brave and Firefox usually block it). Open the page in Chrome or Edge, or type your question.</div>';return}
+ const r=new SR();r.lang=$("#sl").value;r.interimResults=false;r.maxAlternatives=1;b.textContent="🎤 Listening…";
+ r.onresult=e=>{$("#sq").value=e.results[0][0].transcript};
+ r.onerror=e=>{$("#sout").innerHTML=`<div class="card warn">Could not hear you (${esc(e.error)}). Check microphone permission and internet, then try again or type.</div>`};
+ r.onend=()=>{b.textContent="🎤 Speak"};
+ try{r.start()}catch(e){b.textContent="🎤 Speak"}};
+function sVoice(code) {
+  const voices = speechSynthesis.getVoices();
+  const lang = code.replace("_", "-").toLowerCase();
+
+  return voices.find(v =>
+    v.lang.replace("_", "-").toLowerCase() === lang
+  ) || voices.find(v =>
+    v.lang.toLowerCase().startsWith(lang.slice(0, 2))
+  );
+}
+
+function sSpeak() {
+  if (!SLAST) return;
+
+  if (!("speechSynthesis" in window)) {
+    $("#snote").textContent =
+      "This browser cannot read aloud. The text is shown above.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const speakNow = () => {
+    const voice = sVoice(SLAST.code);
+
+    if (!voice) {
+      $("#snote").textContent =
+        "No voice available for this language. The answer is shown as text.";
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(SLAST.text);
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
+    utterance.rate = 0.92;
+
+    utterance.onerror = (event) => {
+      $("#snote").textContent = "Voice playback failed: " + event.error;
+    };
+
+    $("#snote").textContent = "Playing audio...";
+    speechSynthesis.speak(utterance);
+  };
+
+  if (speechSynthesis.getVoices().length) {
+    speakNow();
+  } else {
+    speechSynthesis.onvoiceschanged = () => {
+      speechSynthesis.onvoiceschanged = null;
+      speakNow();
+    };
+  }
+}
+async function sFacts(names){const out=[];
+ for(const n of names.slice(0,3)){try{const c=await fc(n),H=c.ghs.H;
+  out.push(`<div class="card"><h3>${esc(c.pr.Title)} <span class="sm">· ${esc(c.pr.MolecularFormula||"")} · CID ${c.cid}</span></h3>${H.length?`<p>Signal word: <b>${esc([...new Set(c.ghs.signal)].join(" / ")||"n/a")}</b></p><ul>${H.slice(0,8).map(h=>`<li>${esc(h.t)}</li>`).join("")}</ul>`:'<p class="lab w">No GHS classification retrieved: insufficient information. Check the label or SDS.</p>'}<p class="sm">Source: PubChem GHS data (English), retrieved ${esc(c.t)}. Inherent hazard classification, not workplace risk.</p></div>`)}
+  catch(e){out.push(`<div class="card warn">No PubChem record found for "${esc(n)}". Check the spelling of the name on the label.</div>`)}}
+ return out.join("")}
+$("#sask").onclick=async()=>{const o=$("#sout"),q=$("#sq").value.trim(),L=LANGS.find(l=>l[0]==$("#sl").value);
+ if(!SIMG&&!q){o.innerHTML='<div class="card warn">Add a photo of the label, or speak/type a question.</div>';return}
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+ o.innerHTML='<div class="card">Reading the label and preparing your answer…</div>';
+ let ai=null,aiErr="";
+ try{const r=await fetch($("#sapi").value.trim().replace(/\/$/,"")+"/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:SIMG,question:q,language:L[2],lang_code:L[0]})});
+  const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Server error "+r.status);ai=d}
+ catch(e){aiErr=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?"The AI backend is not running or cannot be reached. Start it with: python app.py (see the backend settings above).":e.message}
+ const names=ai&&ai.chemicals&&ai.chemicals.length?ai.chemicals:(!SIMG&&q&&q.length<60?[q]:[]);
+ let html="";
+ if(ai){SLAST={text:ai.answer,code:L[0]};
+  html+=`<div class="card ai"><h3>Answer (${esc(L[1])})</h3><p dir="auto" style="font-size:1.1em;line-height:1.55">${esc(ai.answer)}</p>${ai.readable===false?'<p class="lab w">The label was not clear. Please take a closer, well-lit photo.</p>':""}<p class="sm">AI-generated from your photo and question, in your language. It can make mistakes: follow the printed label and local advice.</p><p id="snote" class="sm"></p></div>`}
+ else html+=`<div class="card warn"><h3>AI answer unavailable</h3><p>${esc(aiErr)}</p>${names.length?'<p class="sm">Showing only the documented PubChem facts below, in English.</p>':""}</div><p id="snote" class="sm"></p>`;
+ html+=`<h3>Documented facts (PubChem)</h3>`+(names.length?await sFacts(names):'<div class="card info">No chemical name was identified, so no database facts are shown.</div>');
+ o.innerHTML=html;
+ $("#sspeak").style.display=ai?"":"none";$("#sstop").style.display=ai?"":"none";
+ if(ai)sSpeak()};
+ // ChemSafe camera feature
+const openCameraButton = document.getElementById("openCamera");
+const captureButton = document.getElementById("capturePhoto");
+const closeCameraButton = document.getElementById("closeCamera");
+const cameraPreview = document.getElementById("cameraPreview");
+const cameraCanvas = document.getElementById("cameraCanvas");
+const uploadInput = document.getElementById("sf");
+
+let cameraStream = null;
+
+// Open camera
+openCameraButton.addEventListener("click", async () => {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false
+    });
+
+    cameraPreview.srcObject = cameraStream;
+    cameraPreview.style.display = "block";
+    captureButton.style.display = "inline-block";
+    closeCameraButton.style.display = "inline-block";
+    openCameraButton.style.display = "none";
+
+    await cameraPreview.play();
+  } catch (error) {
+    alert("Camera could not open: " + error.message);
+  }
+});
+
+// Capture photo
+captureButton.addEventListener("click", () => {
+  if (!cameraStream) return;
+
+  cameraCanvas.width = cameraPreview.videoWidth;
+  cameraCanvas.height = cameraPreview.videoHeight;
+
+  cameraCanvas.getContext("2d").drawImage(
+    cameraPreview, 0, 0,
+    cameraCanvas.width, cameraCanvas.height
+  );
+
+  cameraCanvas.toBlob(blob => {
+    if (!blob) {
+      alert("Could not capture photo. Please try again.");
+      return;
+    }
+
+    const photoFile = new File(
+      [blob], "chemsafe-photo.jpg",
+      { type: "image/jpeg" }
+    );
+
+    const transfer = new DataTransfer();
+    transfer.items.add(photoFile);
+    uploadInput.files = transfer.files;
+    uploadInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+    closeCamera();
+  }, "image/jpeg", 0.9);
+});
+
+// Close camera
+function closeCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  cameraPreview.srcObject = null;
+  cameraPreview.style.display = "none";
+  captureButton.style.display = "none";
+  closeCameraButton.style.display = "none";
+  openCameraButton.style.display = "inline-block";
+}
+
+closeCameraButton.addEventListener("click", closeCamera);
+
+// Initial button visibility
+captureButton.style.display = "none";
+closeCameraButton.style.display = "none";
+</script>
+<script>if(location.protocol==="file:")document.querySelector("#sapi").value="http://localhost:5000";</script>
+</body></html>

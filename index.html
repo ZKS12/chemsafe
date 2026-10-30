@@ -203,7 +203,7 @@ nav{padding-top:84px}
 <section id="scan"><div class="card"><h2>Scan &amp; Ask: photo + voice in your language</h2>
 <p class="sm">1) Pick your language. 2) Take or upload a photo of the product label. 3) Speak or type your question. The AI answers in your language and can read the answer aloud. Chemical facts from PubChem are shown separately below the AI text.</p>
 <div class="row"><select id="sl" aria-label="Language"></select></div>
-<div class="row" style="margin-top:8px"><input type="file" id="sf" accept="image/*" capture="environment"></div>
+<div class="row" style="margin-top:8px"><input type="file" id="scanfile" accept="image/*" capture="environment"></div>
 
 <img id="sp" alt="Label preview" style="display:none;max-width:100%;max-height:220px;object-fit:contain;margin:8px auto;border-radius:12px">
 <div class="row" style="margin-top:8px">
@@ -217,7 +217,7 @@ nav{padding-top:84px}
 <div class="row" style="margin-top:8px"><button class="p" id="sask" type="button">Ask</button><button class="p" id="sspeak" type="button" style="display:none">🔊 Read aloud</button><button class="p" id="sstop" type="button" style="display:none">⏹ Stop</button></div>
 <details style="margin-top:8px"><summary class="sm">Backend settings</summary><input id="sapi" value="" placeholder="Leave empty on the live site" aria-label="Backend URL"><p class="sm">Leave empty on the live website. Only for local testing: open the file directly and the address http://localhost:5000 is used automatically. The AI key stays on the server, never in this page.</p></details>
 <p class="sm"><b>Safety:</b> AI can misread labels. Always follow the printed label and your local agriculture or safety officer. This tool never gives spray doses or mixing ratios. If someone is poisoned or exposed, get medical help or call your local poison helpline right away.</p></div>
-<div id="sout"></div></section>
+<div id="scanout"></div></section>
 </main>
 <footer class="sm">Decision-support only. Always consult the supplier SDS and qualified professionals.</footer>
 <script>
@@ -968,16 +968,16 @@ async function accGo(q){q=q.trim();const o=$("#aout");if(!q){o.innerHTML='<div c
 const LANGS=[["en-IN","English","English"],["hi-IN","हिन्दी","Hindi"],["ta-IN","தமிழ்","Tamil"],["te-IN","తెలుగు","Telugu"],["bn-IN","বাংলা","Bengali"],["mr-IN","मराठी","Marathi"],["gu-IN","ગુજરાતી","Gujarati"],["kn-IN","ಕನ್ನಡ","Kannada"],["ml-IN","മലയാളം","Malayalam"],["pa-IN","ਪੰਜਾਬੀ","Punjabi"],["ur-IN","اردو","Urdu"],["es-ES","Español","Spanish"],["fr-FR","Français","French"],["pt-BR","Português","Portuguese"],["sw-KE","Kiswahili","Swahili"]];
 $("#sl").innerHTML=LANGS.map(l=>`<option value="${l[0]}">${l[1]} (${l[2]})</option>`).join("");
 let SIMG=null,SLAST=null;
-$("#sf").onchange=e=>{const f=e.target.files[0];if(!f){SIMG=null;$("#sp").style.display="none";return}
+$("#scanfile").onchange=e=>{const f=e.target.files[0];if(!f){SIMG=null;$("#sp").style.display="none";return}
  const im=new Image(),u=URL.createObjectURL(f);
  im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);const d=c.toDataURL("image/jpeg",.85);SIMG=d.split(",")[1];$("#sp").src=d;$("#sp").style.display="block";URL.revokeObjectURL(u)};
- im.onerror=()=>{SIMG=null;$("#sout").innerHTML='<div class="card warn">That file could not be read as an image. Try another photo.</div>'};im.src=u};
+ im.onerror=()=>{SIMG=null;$("#scanout").innerHTML='<div class="card warn">That file could not be read as an image. Try another photo.</div>'};im.src=u};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 $("#smic").onclick=()=>{const b=$("#smic");
- if(!SR){$("#sout").innerHTML='<div class="card warn">Voice input is not available in this browser (Brave and Firefox usually block it). Open the page in Chrome or Edge, or type your question.</div>';return}
+ if(!SR){$("#scanout").innerHTML='<div class="card warn">Voice input is not available in this browser (Brave and Firefox usually block it). Open the page in Chrome or Edge, or type your question.</div>';return}
  const r=new SR();r.lang=$("#sl").value;r.interimResults=false;r.maxAlternatives=1;b.textContent="🎤 Listening…";
  r.onresult=e=>{$("#sq").value=e.results[0][0].transcript};
- r.onerror=e=>{$("#sout").innerHTML=`<div class="card warn">Could not hear you (${esc(e.error)}). Check microphone permission and internet, then try again or type.</div>`};
+ r.onerror=e=>{$("#scanout").innerHTML=`<div class="card warn">Could not hear you (${esc(e.error)}). Check microphone permission and internet, then try again or type.</div>`};
  r.onend=()=>{b.textContent="🎤 Speak"};
  try{r.start()}catch(e){b.textContent="🎤 Speak"}};
 function sVoice(code) {
@@ -991,66 +991,45 @@ function sVoice(code) {
   );
 }
 
-function sSpeak() {
-  if (!SLAST) return;
-
-  if (!("speechSynthesis" in window)) {
-    $("#snote").textContent =
-      "This browser cannot read aloud. The text is shown above.";
-    return;
-  }
-
-  speechSynthesis.cancel();
-
-  const speakNow = () => {
-    const voice = sVoice(SLAST.code);
-
-    if (!voice) {
-      $("#snote").textContent =
-        "No voice available for this language. The answer is shown as text.";
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(SLAST.text);
-    utterance.voice = voice;
-    utterance.lang = voice.lang;
-    utterance.rate = 0.92;
-
-    utterance.onerror = (event) => {
-      $("#snote").textContent = "Voice playback failed: " + event.error;
-    };
-
-    $("#snote").textContent = "Playing audio...";
-    speechSynthesis.speak(utterance);
-  };
-
-  if (speechSynthesis.getVoices().length) {
-    speakNow();
-  } else {
-    speechSynthesis.onvoiceschanged = () => {
-      speechSynthesis.onvoiceschanged = null;
-      speakNow();
-    };
-  }
-}
+let sGen=0;
+function sChunks(t){const m=String(t).replace(/\s+/g," ").match(/[^.!?।۔؟]+[.!?।۔؟]*/g)||[String(t)];const out=[];let cur="";for(const x of m){if((cur+x).length>160&&cur){out.push(cur);cur=x}else cur+=x}if(cur.trim())out.push(cur);return out.map(x=>x.trim()).filter(Boolean)}
+function sStop(){sGen++;try{if("speechSynthesis" in window)speechSynthesis.cancel()}catch(e){}const n=$("#scannote");if(n)n.textContent="Stopped."}
+function sSpeak(){
+ if(!SLAST)return;const note=$("#scannote");
+ if(!("speechSynthesis" in window)){if(note)note.textContent="This browser cannot read aloud. The text is shown above.";return}
+ const g=++sGen;speechSynthesis.cancel();
+ setTimeout(()=>{if(g!==sGen)return;
+  const go=()=>{if(g!==sGen)return;const v=sVoice(SLAST.code);
+   if(!v){if(note)note.textContent="No voice for this language is installed on this device, so the answer is shown as text only.";return}
+   const parts=sChunks(SLAST.text);let i=0;
+   const next=()=>{if(g!==sGen)return;if(i>=parts.length){if(note)note.textContent="";return}
+    const u=new SpeechSynthesisUtterance(parts[i++]);u.voice=v;u.lang=v.lang;u.rate=.92;
+    u.onend=next;u.onerror=ev=>{if(ev.error=="canceled"||ev.error=="interrupted")return;if(note)note.textContent="Voice playback failed: "+ev.error};
+    speechSynthesis.speak(u)};
+   if(note)note.textContent="Playing audio…";next()};
+  if(speechSynthesis.getVoices().length)go();else{speechSynthesis.onvoiceschanged=()=>{speechSynthesis.onvoiceschanged=null;go()}}
+ },150)}
+$("#sspeak").onclick=sSpeak;$("#sstop").onclick=sStop;
+window.addEventListener("beforeunload",()=>{try{speechSynthesis.cancel()}catch(e){}});
+{const _s=show;show=function(id){if(id!=="scan")sStop();return _s(id)}}
 async function sFacts(names){const out=[];
  for(const n of names.slice(0,3)){try{const c=await fc(n),H=c.ghs.H;
   out.push(`<div class="card"><h3>${esc(c.pr.Title)} <span class="sm">· ${esc(c.pr.MolecularFormula||"")} · CID ${c.cid}</span></h3>${H.length?`<p>Signal word: <b>${esc([...new Set(c.ghs.signal)].join(" / ")||"n/a")}</b></p><ul>${H.slice(0,8).map(h=>`<li>${esc(h.t)}</li>`).join("")}</ul>`:'<p class="lab w">No GHS classification retrieved: insufficient information. Check the label or SDS.</p>'}<p class="sm">Source: PubChem GHS data (English), retrieved ${esc(c.t)}. Inherent hazard classification, not workplace risk.</p></div>`)}
   catch(e){out.push(`<div class="card warn">No PubChem record found for "${esc(n)}". Check the spelling of the name on the label.</div>`)}}
  return out.join("")}
-$("#sask").onclick=async()=>{const o=$("#sout"),q=$("#sq").value.trim(),L=LANGS.find(l=>l[0]==$("#sl").value);
+$("#sask").onclick=async()=>{const o=$("#scanout"),q=$("#sq").value.trim(),L=LANGS.find(l=>l[0]==$("#sl").value);
  if(!SIMG&&!q){o.innerHTML='<div class="card warn">Add a photo of the label, or speak/type a question.</div>';return}
- if("speechSynthesis" in window)speechSynthesis.cancel();
+ sGen++;if("speechSynthesis" in window)speechSynthesis.cancel();
  o.innerHTML='<div class="card">Reading the label and preparing your answer…</div>';
  let ai=null,aiErr="";
  try{const r=await fetch($("#sapi").value.trim().replace(/\/$/,"")+"/api/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:SIMG,question:q,language:L[2],lang_code:L[0]})});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Server error "+r.status);ai=d}
- catch(e){aiErr=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?"The AI backend is not running or cannot be reached. Start it with: python app.py (see the backend settings above).":e.message}
+ catch(e){aiErr=/Failed to fetch|NetworkError|Load failed/i.test(e.message)?(location.protocol==="file:"?"The AI backend is not running. Start it with: python app.py (see the backend settings above).":"Could not reach the server. Check your internet connection and try again."):e.message}
  const names=ai&&ai.chemicals&&ai.chemicals.length?ai.chemicals:(!SIMG&&q&&q.length<60?[q]:[]);
  let html="";
  if(ai){SLAST={text:ai.answer,code:L[0]};
-  html+=`<div class="card ai"><h3>Answer (${esc(L[1])})</h3><p dir="auto" style="font-size:1.1em;line-height:1.55">${esc(ai.answer)}</p>${ai.readable===false?'<p class="lab w">The label was not clear. Please take a closer, well-lit photo.</p>':""}<p class="sm">AI-generated from your photo and question, in your language. It can make mistakes: follow the printed label and local advice.</p><p id="snote" class="sm"></p></div>`}
- else html+=`<div class="card warn"><h3>AI answer unavailable</h3><p>${esc(aiErr)}</p>${names.length?'<p class="sm">Showing only the documented PubChem facts below, in English.</p>':""}</div><p id="snote" class="sm"></p>`;
+  html+=`<div class="card ai"><h3>Answer (${esc(L[1])})</h3><p dir="auto" style="font-size:1.1em;line-height:1.55">${esc(ai.answer)}</p>${ai.readable===false?'<p class="lab w">The label was not clear. Please take a closer, well-lit photo.</p>':""}<p class="sm">AI-generated from your photo and question, in your language. It can make mistakes: follow the printed label and local advice.</p><p id="scannote" class="sm"></p></div>`}
+ else html+=`<div class="card warn"><h3>AI answer unavailable</h3><p>${esc(aiErr)}</p>${names.length?'<p class="sm">Showing only the documented PubChem facts below, in English.</p>':""}</div><p id="scannote" class="sm"></p>`;
  html+=`<h3>Documented facts (PubChem)</h3>`+(names.length?await sFacts(names):'<div class="card info">No chemical name was identified, so no database facts are shown.</div>');
  o.innerHTML=html;
  $("#sspeak").style.display=ai?"":"none";$("#sstop").style.display=ai?"":"none";
@@ -1061,7 +1040,7 @@ const captureButton = document.getElementById("capturePhoto");
 const closeCameraButton = document.getElementById("closeCamera");
 const cameraPreview = document.getElementById("cameraPreview");
 const cameraCanvas = document.getElementById("cameraCanvas");
-const uploadInput = document.getElementById("sf");
+const uploadInput = document.getElementById("scanfile");
 
 let cameraStream = null;
 

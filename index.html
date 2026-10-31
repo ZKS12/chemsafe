@@ -951,26 +951,17 @@ const fnorm=u=>decodeURIComponent(String(u).split("/").pop()).replace(/^File:/,"
 async function accGo(q) {
   q = q.trim();
   const o = $("#aout");
-
   if (!q) {
     o.innerHTML = '<div class="card warn">Enter an accident name, chemical, place or year.</div>';
     return;
   }
-
   o.innerHTML = '<div class="card">Loading incident report…</div>';
-
   try {
-    // Check for an exact match among the famous accident cases.
     const exact = ACC.find(a => a.toLowerCase() === q.toLowerCase());
     let title = exact;
-
-    // If no exact match, search for one relevant result.
     if (!title) {
-      const d = await j(
-        "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=1&srsearch=" +
-        encodeURIComponent(q + " chemical accident OR explosion OR disaster OR toxic release")
-      );
-
+      const d = await j("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=1&srsearch=" +
+        encodeURIComponent(q + " chemical accident OR explosion OR disaster OR toxic release"));
       const result = d.query?.search?.[0];
       if (!result || /^(list of|lists of|outline of|timeline of)/i.test(result.title)) {
         o.innerHTML = '<div class="card info">No suitable accident report found. Try a specific accident name, chemical or location.</div>';
@@ -979,18 +970,16 @@ async function accGo(q) {
       title = result.title;
     }
 
-    // Load only the selected accident.
-    const s = await wsum(title);
-    if (!s || !s.extract) {
+    const report = await wsum(title);
+    if (!report || !report.extract) {
       o.innerHTML = '<div class="card info">No summary is available for this incident.</div>';
       return;
     }
 
-    // Load an image for the selected accident.
-    let img = s.thumbnail?.source || s.originalimage?.source;
+    let img = report.thumbnail?.source || report.originalimage?.source;
     if (!img) {
       try {
-        const media = await wmedia(s.title);
+        const media = await wmedia(report.title);
         if (media.length) {
           const src = (media[0].srcset.find(x => x.scale === "1x") || media[0].srcset[0]).src;
           img = src.startsWith("//") ? "https:" + src : src;
@@ -998,25 +987,102 @@ async function accGo(q) {
       } catch (e) {}
     }
 
-    o.innerHTML = `
-      <div class="card">
-        ${img ? `
-          <div style="height:220px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:8px">
-            <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy"
-              style="max-width:100%;max-height:220px;width:auto;height:auto;object-fit:contain">
-          </div>
-        ` : ""}
-        <h3>${esc(s.title)}</h3>
-        <p>${esc(s.extract)}</p>
-        ${LES[s.title] ? `
-          <p><b>Safety lessons:</b> ${LES[s.title]}</p>
-        ` : ""}
-        <p class="sm">
-          Summary and photo: Wikipedia/Wikimedia Commons.
-          For official findings, consult the original CSB/HSE investigation report.
-        </p>
-      </div>
-    `;
+    const imageBlock = img ? `<div style="height:240px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:12px"><img src="${esc(img)}" alt="${esc(report.title)}" loading="lazy" style="max-width:100%;max-height:240px;width:auto;height:auto;object-fit:contain"></div>` : "";
+    const isBhopal = /bhopal/i.test(report.title) || /bhopal/i.test(q);
+
+    if (isBhopal) {
+      o.innerHTML = `
+        <div class="card">
+          ${imageBlock}
+          <h2>Bhopal Gas Tragedy — Incident Investigation Report</h2>
+          <h3>1. Incident base report</h3>
+          <p>On the night of 2–3 December 1984, a large release of methyl isocyanate (MIC) gas occurred at the Union Carbide India Limited pesticide plant in Bhopal, Madhya Pradesh. The toxic cloud spread into densely populated neighbourhoods around the facility while many residents were asleep. Thousands of people died, and a much larger number suffered acute and long-term health effects. The exact death toll and long-term burden have been reported differently by different sources.</p>
+          <p><b>Substance involved:</b> Methyl isocyanate (MIC), a highly toxic and reactive chemical used in pesticide manufacture.</p>
+          <p><b>Type of event:</b> Toxic chemical release from a process-storage system, followed by widespread off-site exposure.</p>
+          <p><b>Facility:</b> Union Carbide India Limited pesticide plant, Bhopal, India.</p>
+          <p><b>Immediate consequence:</b> A toxic gas cloud escaped from the plant and exposed nearby communities, causing mass casualties and overwhelming local medical and emergency services.</p>
+          <p class="sm">This is a learning summary, not a substitute for the original investigation records. The exact sequence and contribution of individual failures have been debated in subsequent investigations and litigation.</p>
+        </div>
+
+        <div class="card warn">
+          <h3>2. Safety lessons</h3>
+          <ul>
+            <li>Keep highly reactive and toxic chemicals under strict inventory, temperature and moisture control.</li>
+            <li>Maintain critical safeguards, including refrigeration, scrubbers, flare systems, alarms and emergency isolation, and verify that they are available when needed.</li>
+            <li>Apply rigorous process-safety management: hazard analysis, operating procedures, maintenance, management of change and independent audits.</li>
+            <li>Provide effective leak detection, on-site emergency plans, community warning systems and coordinated off-site response.</li>
+            <li>Consider surrounding population density in land-use planning, emergency planning and consequence analysis.</li>
+            <li>Ensure workers and nearby communities know the alarm, evacuation and shelter-in-place procedures.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>3. Timeline of events</h3>
+          <ul>
+            <li><b>2 December 1984, evening:</b> Routine operations were underway at the pesticide plant.</li>
+            <li><b>Late night:</b> A runaway reaction and pressure rise occurred in a MIC storage tank. Water contamination is widely cited in accounts of the disaster, although the precise pathway and responsibility have been disputed.</li>
+            <li><b>Night of 2–3 December:</b> Toxic MIC-containing gas escaped through the plant's venting system and spread beyond the facility.</li>
+            <li><b>3 December onward:</b> Hospitals and emergency services faced a large influx of exposed people; the incident triggered extensive medical, legal and industrial-safety consequences.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>4. Chemical involved — methyl isocyanate (MIC)</h3>
+          <p>MIC is a volatile, highly toxic and reactive intermediate used in the manufacture of carbamate pesticides. Exposure by inhalation can cause severe injury to the respiratory system and eyes. Its reactivity means that contamination, unsuitable storage conditions or loss of process control can create a serious escalation risk.</p>
+          <p><b>Key process-safety concern:</b> MIC storage requires strict control of temperature, contamination, pressure, containment and emergency treatment systems. The exact operating and safeguard status at the time of the disaster should be checked against primary investigation records.</p>
+        </div>
+
+        <div class="card">
+          <h3>5. Hazard mechanism and release</h3>
+          <p>The disaster involved a loss of containment from a MIC storage tank. The commonly reported explanation describes water entering the tank and contributing to an exothermic reaction, temperature and pressure rise, and release of toxic material. The detailed mechanism and the route by which water entered have been contested; this report therefore presents it as a widely reported explanation rather than an uncontested finding.</p>
+          <p>Once released, the dense toxic vapour cloud moved into nearby populated areas. The scale of harm was amplified by the large inventory, the proximity of communities, limited warning and the difficulty of identifying the gas and providing appropriate treatment rapidly.</p>
+        </div>
+
+        <div class="card">
+          <h3>6. Root-cause and contributing-factor analysis</h3>
+          <ul>
+            <li><b>Loss of containment:</b> Toxic material escaped from the storage and venting system.</li>
+            <li><b>Process-control vulnerabilities:</b> The event highlighted the importance of controlling temperature, contamination, pressure and inventory in reactive chemical storage.</li>
+            <li><b>Safeguard reliability:</b> The effectiveness, availability and capacity of protective systems became central issues in post-incident scrutiny.</li>
+            <li><b>Emergency preparedness:</b> Warning, communication, evacuation guidance and medical readiness were inadequate for an event of this scale.</li>
+            <li><b>Site-community interface:</b> Dense residential development close to a major hazardous installation increased the potential for catastrophic off-site consequences.</li>
+          </ul>
+          <p class="sm">These are high-level contributing-factor themes for safety learning, not a legal determination of individual or organisational liability.</p>
+        </div>
+
+        <div class="card">
+          <h3>7. Human and environmental consequences</h3>
+          <p>The release caused thousands of immediate deaths and widespread acute illness. Survivors reported long-term respiratory, ocular, neurological and other health problems. Families and communities experienced lasting social and economic consequences. Contamination concerns at and around the former industrial site have also remained part of the disaster's legacy.</p>
+          <p class="sm">Published estimates differ depending on the period counted, the definition of disaster-related death and the source. Avoid treating a single number as definitive without specifying its source and date.</p>
+        </div>
+
+        <div class="card">
+          <h3>8. Emergency response and preparedness</h3>
+          <ul>
+            <li>Activate alarms and communicate the nature and direction of the release immediately.</li>
+            <li>Initiate the site emergency plan and notify public emergency services and local authorities.</li>
+            <li>Provide clear community instructions for evacuation or sheltering based on plume conditions and competent emergency advice.</li>
+            <li>Ensure responders have suitable respiratory protection, chemical information and incident command arrangements.</li>
+            <li>Hospitals should receive timely information about the substance involved so they can prepare appropriate triage and treatment.</li>
+          </ul>
+          <p class="sm">These are general preparedness lessons, not a claim that each action occurred during the 1984 response.</p>
+        </div>
+
+        <div class="card">
+          <h3>9. Investigation sources and further reading</h3>
+          <p>Use primary records and established institutional sources for academic citation and detailed technical conclusions:</p>
+          <ul>
+            <li><a href="https://www.britannica.com/event/Bhopal-disaster" target="_blank" rel="noopener">Encyclopaedia Britannica — Bhopal disaster overview</a></li>
+            <li><a href="https://www.bhopal.org/" target="_blank" rel="noopener">Bhopal Medical Appeal — health and survivor information</a></li>
+            <li><a href="https://www.ilo.org/" target="_blank" rel="noopener">International Labour Organization — occupational safety resources</a></li>
+          </ul>
+          <p class="sm">Background summary: Wikipedia/Wikimedia Commons. The links above are further-reading starting points; verify original government, court and technical investigation documents before citing specific findings.</p>
+        </div>`;
+    } else {
+      o.innerHTML = `<div class="card">${imageBlock}<h2>${esc(report.title)}</h2><h3>Incident base report</h3><p>${esc(report.extract)}</p></div>
+        ${LES[report.title] ? `<div class="card warn"><h3>Safety lessons</h3><p>${esc(LES[report.title])}</p></div>` : ""}
+        <div class="card"><h3>Further investigation</h3><p>Use the incident summary as an introduction, then consult the original investigation report for the event timeline, chemical hazards, initiating event, failed safeguards, consequences and corrective actions.</p><p class="sm">Summary and photo: Wikipedia/Wikimedia Commons. This result is not itself an official investigation report.</p></div>`;
+    }
   } catch (e) {
     o.innerHTML = '<div class="card warn">Could not load this incident. Check your internet connection and try again.</div>';
   }

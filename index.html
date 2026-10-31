@@ -948,20 +948,79 @@ $("#ga").onkeydown=e=>{if(e.key=="Enter")$("#ggo").click()};
 /* ===== Accident cards: no repeated photos, contained image size, no "List of" pages ===== */
 const wmedia=async t=>{const r=await fetch("https://en.wikipedia.org/api/rest_v1/page/media-list/"+encodeURIComponent(t.replace(/ /g,"_")));if(!r.ok)return[];const d=await r.json();return(d.items||[]).filter(i=>i.type=="image"&&/\.(jpe?g|png)$/i.test(i.title||"")&&(i.srcset||[]).length)};
 const fnorm=u=>decodeURIComponent(String(u).split("/").pop()).replace(/^File:/,"").replace(/^\d+px-/,"").replace(/_/g," ").toLowerCase();
-async function accGo(q){q=q.trim();const o=$("#aout");if(!q){o.innerHTML='<div class="card warn">Enter a chemical, accident name, place or year.</div>';return}
- o.innerHTML='<div class="card">Loading incident summaries…</div>';
- try{let ts=ACC.filter(a=>a.toLowerCase().includes(q.toLowerCase()));
-  const d=await j("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=8&srsearch="+encodeURIComponent(q+" chemical accident OR explosion OR disaster OR toxic release"));
-  d.query.search.forEach(x=>{if(!ts.includes(x.title)&&!/^(list of|lists of|outline of|timeline of)/i.test(x.title))ts.push(x.title)});
-  const S=(await Promise.allSettled(ts.slice(0,5).map(wsum))).filter(x=>x.status=="fulfilled").map(x=>x.value);
-  if(!S.length){o.innerHTML='<div class="card info">No incident summaries found. Try a different keyword (for example "ammonium nitrate" or "chlorine leak").</div>';return}
-  const used=new Set(),imgs=[];
-  for(const s of S){let u=null;const first=s.thumbnail?.source||s.originalimage?.source;
-   if(first&&!used.has(fnorm(s.originalimage?.source||first))){u=first;used.add(fnorm(s.originalimage?.source||first))}
-   else{try{const m=await wmedia(s.title);for(const i of m){const k=fnorm(i.title);if(!used.has(k)){used.add(k);u=(i.srcset.find(x=>x.scale=="1x")||i.srcset[0]).src;if(u.startsWith("//"))u="https:"+u;break}}}catch(e){}}
-   imgs.push(u)}
-  o.innerHTML=S.map((s,i)=>`<div class="card">${imgs[i]?`<div style="height:220px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:8px"><img src="${esc(imgs[i])}" alt="${esc(s.title)}" loading="lazy" style="max-width:100%;max-height:220px;width:auto;height:auto;object-fit:contain"></div>`:""}<h3>${esc(s.title)}</h3><p>${esc(s.extract)}</p>${LES[s.title]?`<p><b>Safety lessons:</b> ${LES[s.title]}</p>`:""}<p class="sm">Summary and photo: Wikipedia/Wikimedia Commons. For official findings read the CSB/HSE investigation report.</p></div>`).join("")
- }catch(e){o.innerHTML='<div class="card warn">Could not load incidents (check your internet connection).</div>'}}
+async function accGo(q) {
+  q = q.trim();
+  const o = $("#aout");
+
+  if (!q) {
+    o.innerHTML = '<div class="card warn">Enter an accident name, chemical, place or year.</div>';
+    return;
+  }
+
+  o.innerHTML = '<div class="card">Loading incident report…</div>';
+
+  try {
+    // Check for an exact match among the famous accident cases.
+    const exact = ACC.find(a => a.toLowerCase() === q.toLowerCase());
+    let title = exact;
+
+    // If no exact match, search for one relevant result.
+    if (!title) {
+      const d = await j(
+        "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=1&srsearch=" +
+        encodeURIComponent(q + " chemical accident OR explosion OR disaster OR toxic release")
+      );
+
+      const result = d.query?.search?.[0];
+      if (!result || /^(list of|lists of|outline of|timeline of)/i.test(result.title)) {
+        o.innerHTML = '<div class="card info">No suitable accident report found. Try a specific accident name, chemical or location.</div>';
+        return;
+      }
+      title = result.title;
+    }
+
+    // Load only the selected accident.
+    const s = await wsum(title);
+    if (!s || !s.extract) {
+      o.innerHTML = '<div class="card info">No summary is available for this incident.</div>';
+      return;
+    }
+
+    // Load an image for the selected accident.
+    let img = s.thumbnail?.source || s.originalimage?.source;
+    if (!img) {
+      try {
+        const media = await wmedia(s.title);
+        if (media.length) {
+          const src = (media[0].srcset.find(x => x.scale === "1x") || media[0].srcset[0]).src;
+          img = src.startsWith("//") ? "https:" + src : src;
+        }
+      } catch (e) {}
+    }
+
+    o.innerHTML = `
+      <div class="card">
+        ${img ? `
+          <div style="height:220px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:8px">
+            <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy"
+              style="max-width:100%;max-height:220px;width:auto;height:auto;object-fit:contain">
+          </div>
+        ` : ""}
+        <h3>${esc(s.title)}</h3>
+        <p>${esc(s.extract)}</p>
+        ${LES[s.title] ? `
+          <p><b>Safety lessons:</b> ${LES[s.title]}</p>
+        ` : ""}
+        <p class="sm">
+          Summary and photo: Wikipedia/Wikimedia Commons.
+          For official findings, consult the original CSB/HSE investigation report.
+        </p>
+      </div>
+    `;
+  } catch (e) {
+    o.innerHTML = '<div class="card warn">Could not load this incident. Check your internet connection and try again.</div>';
+  }
+}
 </script>
 <script>
 /* ===== Scan & Ask: label photo + voice in any language, AI reply in same language ===== */

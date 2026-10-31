@@ -189,7 +189,7 @@ nav{padding-top:84px}
 <section id="report"><div class="card"><h2>Report Generator</h2><div class="row"><input id="ri" placeholder="Chemical"><button class="p" id="rgo">Generate &amp; print / save as PDF</button></div><p class="sm">Opens your browser's print dialog: choose "Save as PDF". Sourced text and AI-free summaries are kept separate.</p></div></section>
 <section id="acc"><div class="card"><h2>Chemical Accident Investigation</h2><p class="sm">Search a chemical, accident, place or year. Summaries and photographs load right here (Wikipedia/Wikimedia Commons); safety lessons are added for well-known cases. For official findings read the CSB/HSE report.</p><div id="acch"></div>
 <div class="row"><input id="ai" placeholder="Chemical, accident name, location or year"><button class="p" id="ago">Search</button></div></div><div id="aout"></div></section>
-<section id="learn"><div class="card"><h2>Learn Chemistry</h2><div class="row"><button class="p" onclick="quiz()">Start quiz</button><button class="p" onclick="flash()">Flashcards</button></div></div><div id="lout"></div></section>
+<section id="learn"><div class="card"><h2>Learn Chemistry</h2><div class="row"><button class="p" onclick="quiz()">Start learning</button></div></div><div id="lout"></div></section>
 <section id="compat"><div class="card"><h2>Chemical Compatibility</h2>
  <p class="sm">Type any number of chemicals (up to 10) separated by commas, e.g. <i>acetone, bleach, ammonia, vinegar, sodium hydroxide</i>. You get a pair-by-pair matrix, the reason for each result, where to store each one and a final recommendation. Safety screening only, <b>not</b> permission to mix.</p>
  <div class="row"><input id="cl" placeholder="acetone, bleach, ammonia, hydrochloric acid, ethanol"><button class="p" id="cgo">Check</button></div></div><div id="cout"></div></section>
@@ -951,17 +951,26 @@ const fnorm=u=>decodeURIComponent(String(u).split("/").pop()).replace(/^File:/,"
 async function accGo(q) {
   q = q.trim();
   const o = $("#aout");
+
   if (!q) {
     o.innerHTML = '<div class="card warn">Enter an accident name, chemical, place or year.</div>';
     return;
   }
+
   o.innerHTML = '<div class="card">Loading incident report…</div>';
+
   try {
+    // Check for an exact match among the famous accident cases.
     const exact = ACC.find(a => a.toLowerCase() === q.toLowerCase());
     let title = exact;
+
+    // If no exact match, search for one relevant result.
     if (!title) {
-      const d = await j("https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=1&srsearch=" +
-        encodeURIComponent(q + " chemical accident OR explosion OR disaster OR toxic release"));
+      const d = await j(
+        "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srlimit=1&srsearch=" +
+        encodeURIComponent(q + " chemical accident OR explosion OR disaster OR toxic release")
+      );
+
       const result = d.query?.search?.[0];
       if (!result || /^(list of|lists of|outline of|timeline of)/i.test(result.title)) {
         o.innerHTML = '<div class="card info">No suitable accident report found. Try a specific accident name, chemical or location.</div>';
@@ -970,16 +979,18 @@ async function accGo(q) {
       title = result.title;
     }
 
-    const report = await wsum(title);
-    if (!report || !report.extract) {
+    // Load only the selected accident.
+    const s = await wsum(title);
+    if (!s || !s.extract) {
       o.innerHTML = '<div class="card info">No summary is available for this incident.</div>';
       return;
     }
 
-    let img = report.thumbnail?.source || report.originalimage?.source;
+    // Load an image for the selected accident.
+    let img = s.thumbnail?.source || s.originalimage?.source;
     if (!img) {
       try {
-        const media = await wmedia(report.title);
+        const media = await wmedia(s.title);
         if (media.length) {
           const src = (media[0].srcset.find(x => x.scale === "1x") || media[0].srcset[0]).src;
           img = src.startsWith("//") ? "https:" + src : src;
@@ -987,102 +998,25 @@ async function accGo(q) {
       } catch (e) {}
     }
 
-    const imageBlock = img ? `<div style="height:240px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:12px"><img src="${esc(img)}" alt="${esc(report.title)}" loading="lazy" style="max-width:100%;max-height:240px;width:auto;height:auto;object-fit:contain"></div>` : "";
-    const isBhopal = /bhopal/i.test(report.title) || /bhopal/i.test(q);
-
-    if (isBhopal) {
-      o.innerHTML = `
-        <div class="card">
-          ${imageBlock}
-          <h2>Bhopal Gas Tragedy — Incident Investigation Report</h2>
-          <h3>1. Incident base report</h3>
-          <p>On the night of 2–3 December 1984, a large release of methyl isocyanate (MIC) gas occurred at the Union Carbide India Limited pesticide plant in Bhopal, Madhya Pradesh. The toxic cloud spread into densely populated neighbourhoods around the facility while many residents were asleep. Thousands of people died, and a much larger number suffered acute and long-term health effects. The exact death toll and long-term burden have been reported differently by different sources.</p>
-          <p><b>Substance involved:</b> Methyl isocyanate (MIC), a highly toxic and reactive chemical used in pesticide manufacture.</p>
-          <p><b>Type of event:</b> Toxic chemical release from a process-storage system, followed by widespread off-site exposure.</p>
-          <p><b>Facility:</b> Union Carbide India Limited pesticide plant, Bhopal, India.</p>
-          <p><b>Immediate consequence:</b> A toxic gas cloud escaped from the plant and exposed nearby communities, causing mass casualties and overwhelming local medical and emergency services.</p>
-          <p class="sm">This is a learning summary, not a substitute for the original investigation records. The exact sequence and contribution of individual failures have been debated in subsequent investigations and litigation.</p>
-        </div>
-
-        <div class="card warn">
-          <h3>2. Safety lessons</h3>
-          <ul>
-            <li>Keep highly reactive and toxic chemicals under strict inventory, temperature and moisture control.</li>
-            <li>Maintain critical safeguards, including refrigeration, scrubbers, flare systems, alarms and emergency isolation, and verify that they are available when needed.</li>
-            <li>Apply rigorous process-safety management: hazard analysis, operating procedures, maintenance, management of change and independent audits.</li>
-            <li>Provide effective leak detection, on-site emergency plans, community warning systems and coordinated off-site response.</li>
-            <li>Consider surrounding population density in land-use planning, emergency planning and consequence analysis.</li>
-            <li>Ensure workers and nearby communities know the alarm, evacuation and shelter-in-place procedures.</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>3. Timeline of events</h3>
-          <ul>
-            <li><b>2 December 1984, evening:</b> Routine operations were underway at the pesticide plant.</li>
-            <li><b>Late night:</b> A runaway reaction and pressure rise occurred in a MIC storage tank. Water contamination is widely cited in accounts of the disaster, although the precise pathway and responsibility have been disputed.</li>
-            <li><b>Night of 2–3 December:</b> Toxic MIC-containing gas escaped through the plant's venting system and spread beyond the facility.</li>
-            <li><b>3 December onward:</b> Hospitals and emergency services faced a large influx of exposed people; the incident triggered extensive medical, legal and industrial-safety consequences.</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>4. Chemical involved — methyl isocyanate (MIC)</h3>
-          <p>MIC is a volatile, highly toxic and reactive intermediate used in the manufacture of carbamate pesticides. Exposure by inhalation can cause severe injury to the respiratory system and eyes. Its reactivity means that contamination, unsuitable storage conditions or loss of process control can create a serious escalation risk.</p>
-          <p><b>Key process-safety concern:</b> MIC storage requires strict control of temperature, contamination, pressure, containment and emergency treatment systems. The exact operating and safeguard status at the time of the disaster should be checked against primary investigation records.</p>
-        </div>
-
-        <div class="card">
-          <h3>5. Hazard mechanism and release</h3>
-          <p>The disaster involved a loss of containment from a MIC storage tank. The commonly reported explanation describes water entering the tank and contributing to an exothermic reaction, temperature and pressure rise, and release of toxic material. The detailed mechanism and the route by which water entered have been contested; this report therefore presents it as a widely reported explanation rather than an uncontested finding.</p>
-          <p>Once released, the dense toxic vapour cloud moved into nearby populated areas. The scale of harm was amplified by the large inventory, the proximity of communities, limited warning and the difficulty of identifying the gas and providing appropriate treatment rapidly.</p>
-        </div>
-
-        <div class="card">
-          <h3>6. Root-cause and contributing-factor analysis</h3>
-          <ul>
-            <li><b>Loss of containment:</b> Toxic material escaped from the storage and venting system.</li>
-            <li><b>Process-control vulnerabilities:</b> The event highlighted the importance of controlling temperature, contamination, pressure and inventory in reactive chemical storage.</li>
-            <li><b>Safeguard reliability:</b> The effectiveness, availability and capacity of protective systems became central issues in post-incident scrutiny.</li>
-            <li><b>Emergency preparedness:</b> Warning, communication, evacuation guidance and medical readiness were inadequate for an event of this scale.</li>
-            <li><b>Site-community interface:</b> Dense residential development close to a major hazardous installation increased the potential for catastrophic off-site consequences.</li>
-          </ul>
-          <p class="sm">These are high-level contributing-factor themes for safety learning, not a legal determination of individual or organisational liability.</p>
-        </div>
-
-        <div class="card">
-          <h3>7. Human and environmental consequences</h3>
-          <p>The release caused thousands of immediate deaths and widespread acute illness. Survivors reported long-term respiratory, ocular, neurological and other health problems. Families and communities experienced lasting social and economic consequences. Contamination concerns at and around the former industrial site have also remained part of the disaster's legacy.</p>
-          <p class="sm">Published estimates differ depending on the period counted, the definition of disaster-related death and the source. Avoid treating a single number as definitive without specifying its source and date.</p>
-        </div>
-
-        <div class="card">
-          <h3>8. Emergency response and preparedness</h3>
-          <ul>
-            <li>Activate alarms and communicate the nature and direction of the release immediately.</li>
-            <li>Initiate the site emergency plan and notify public emergency services and local authorities.</li>
-            <li>Provide clear community instructions for evacuation or sheltering based on plume conditions and competent emergency advice.</li>
-            <li>Ensure responders have suitable respiratory protection, chemical information and incident command arrangements.</li>
-            <li>Hospitals should receive timely information about the substance involved so they can prepare appropriate triage and treatment.</li>
-          </ul>
-          <p class="sm">These are general preparedness lessons, not a claim that each action occurred during the 1984 response.</p>
-        </div>
-
-        <div class="card">
-          <h3>9. Investigation sources and further reading</h3>
-          <p>Use primary records and established institutional sources for academic citation and detailed technical conclusions:</p>
-          <ul>
-            <li><a href="https://www.britannica.com/event/Bhopal-disaster" target="_blank" rel="noopener">Encyclopaedia Britannica — Bhopal disaster overview</a></li>
-            <li><a href="https://www.bhopal.org/" target="_blank" rel="noopener">Bhopal Medical Appeal — health and survivor information</a></li>
-            <li><a href="https://www.ilo.org/" target="_blank" rel="noopener">International Labour Organization — occupational safety resources</a></li>
-          </ul>
-          <p class="sm">Background summary: Wikipedia/Wikimedia Commons. The links above are further-reading starting points; verify original government, court and technical investigation documents before citing specific findings.</p>
-        </div>`;
-    } else {
-      o.innerHTML = `<div class="card">${imageBlock}<h2>${esc(report.title)}</h2><h3>Incident base report</h3><p>${esc(report.extract)}</p></div>
-        ${LES[report.title] ? `<div class="card warn"><h3>Safety lessons</h3><p>${esc(LES[report.title])}</p></div>` : ""}
-        <div class="card"><h3>Further investigation</h3><p>Use the incident summary as an introduction, then consult the original investigation report for the event timeline, chemical hazards, initiating event, failed safeguards, consequences and corrective actions.</p><p class="sm">Summary and photo: Wikipedia/Wikimedia Commons. This result is not itself an official investigation report.</p></div>`;
-    }
+    o.innerHTML = `
+      <div class="card">
+        ${img ? `
+          <div style="height:220px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border-radius:14px;overflow:hidden;margin-bottom:8px">
+            <img src="${esc(img)}" alt="${esc(s.title)}" loading="lazy"
+              style="max-width:100%;max-height:220px;width:auto;height:auto;object-fit:contain">
+          </div>
+        ` : ""}
+        <h3>${esc(s.title)}</h3>
+        <p>${esc(s.extract)}</p>
+        ${LES[s.title] ? `
+          <p><b>Safety lessons:</b> ${LES[s.title]}</p>
+        ` : ""}
+        <p class="sm">
+          Summary and photo: Wikipedia/Wikimedia Commons.
+          For official findings, consult the original CSB/HSE investigation report.
+        </p>
+      </div>
+    `;
   } catch (e) {
     o.innerHTML = '<div class="card warn">Could not load this incident. Check your internet connection and try again.</div>';
   }
@@ -1242,4 +1176,52 @@ captureButton.style.display = "none";
 closeCameraButton.style.display = "none";
 </script>
 <script>if(location.protocol==="file:")document.querySelector("#sapi").value="http://localhost:5000";</script>
+
+<script>
+/* Learn Chemistry: randomized study modules followed by focused 5-question quizzes. */
+(function(){
+ const lessons = [
+  {title:"Understanding chemical hazards", intro:"A chemical hazard is an intrinsic property that can cause harm. Risk is different: it depends on how much is present, how exposure can happen, how long it lasts and what controls are in place.", points:["Hazard is the potential to cause harm; risk considers the likelihood and severity of harm in a real task.","GHS pictograms communicate hazard types: flame (flammable), flame over circle (oxidiser), corrosion (corrosive), skull (acute toxicity), gas cylinder (gas under pressure), and environment (aquatic hazard).","The signal word Danger indicates a more severe hazard category; Warning indicates a less severe category.","H-codes describe hazards. Broadly, H2xx relates to physical hazards, H3xx to health hazards and H4xx to environmental hazards.","P-codes describe precautionary measures. Always check the product label and supplier SDS for the exact chemical and concentration."], qs:[
+   ["What is the best definition of risk?",["The chemical's intrinsic ability to cause harm","The likelihood and severity of harm under actual conditions","The name of a GHS pictogram"],1,"Risk depends on exposure and the controls in place, not just the hazard."],
+   ["Which pictogram represents an oxidiser?",["Flame over circle","Gas cylinder","Exclamation mark"],0,"The flame over circle identifies oxidising substances."],
+   ["What does the GHS signal word Danger indicate?",["A more severe hazard category","A substance is harmless","Only an environmental hazard"],0,"Danger is used for more severe hazard categories."],
+   ["What do H-codes communicate?",["Precautionary actions","Hazard statements","Emergency phone numbers"],1,"H-codes describe the nature of the hazard."],
+   ["What do P-codes communicate?",["Chemical formulas","Precautionary statements","Molecular weights"],1,"P-codes describe recommended precautions." ]
+  ]},
+  {title:"Reading a Safety Data Sheet", intro:"A Safety Data Sheet (SDS) is a structured source of information for safe chemical handling. It contains 16 sections. The most useful section depends on the question you need to answer.", points:["Section 2: hazard identification and GHS classification.","Section 4: first-aid measures. Section 5: firefighting measures. Section 6: accidental release measures.","Section 7: handling and storage. Section 8: exposure controls and personal protection.","Section 10: stability and reactivity, including conditions and materials to avoid.","Section 13: disposal considerations. Always use the supplier's SDS for the exact product; do not assume all products with a similar name are identical."], qs:[
+   ["Which SDS section covers handling and storage?",["Section 7","Section 2","Section 13"],0,"Section 7 covers handling and storage."],
+   ["Where would you look for first-aid measures?",["Section 4","Section 8","Section 10"],0,"First-aid measures are in Section 4."],
+   ["Which section describes PPE and exposure controls?",["Section 5","Section 8","Section 14"],1,"Section 8 covers exposure controls and personal protection."],
+   ["Where are incompatible materials and reactivity discussed?",["Section 10","Section 3","Section 16"],0,"Section 10 covers stability and reactivity."],
+   ["Which section covers accidental release measures?",["Section 6","Section 1","Section 12"],0,"Section 6 covers accidental release measures." ]
+  ]},
+  {title:"Chemical segregation and storage", intro:"Safe storage is not simply putting containers on shelves. Chemicals must be segregated according to their hazards and incompatibilities. A correct storage plan prevents dangerous reactions if a container leaks or spills.", points:["Keep acids separate from bases because contact can release heat and cause splashing.","Keep oxidisers away from fuels, flammable solvents and other readily oxidisable materials.","Keep water-reactive chemicals dry and protected from water ingress, following the SDS.","Keep cyanides and sulfides away from acids; acid contact can release highly toxic gases.","Never store or mix bleach (hypochlorite) with acids or ammonia-containing products. Use compatible cabinets and secondary containment."], qs:[
+   ["Why should acids be stored separately from bases?",["They may react exothermically","They always evaporate together","They become non-hazardous"],0,"Acid-base contact can release heat and cause splashing."],
+   ["Oxidisers should be segregated from…",["Flammable solvents and fuels","Empty clean glassware","Water only"],0,"Oxidisers can intensify fires and react dangerously with fuels and solvents."],
+   ["Why must cyanides be kept away from acids?",["Acid contact can release highly toxic gas","They become less soluble","They freeze immediately"],0,"Acid contact can release highly toxic hydrogen cyanide."],
+   ["Which combination must never be mixed or stored together?",["Bleach and ammonia","Water and clean glass","Sand and sealed plastic"],0,"Bleach and ammonia can produce toxic chloramine vapours."],
+   ["What is the purpose of secondary containment?",["To contain leaks or spills from the primary container","To increase evaporation","To identify the chemical's formula"],0,"Secondary containment helps prevent a leak from spreading." ]
+  ]},
+  {title:"Emergency response and safe handling", intro:"During a chemical incident, protect people before property. The correct response depends on the chemical, amount released, location and exposure. Untrained people should not attempt hazardous rescue, cleanup or neutralisation.", points:["For a large, unknown or uncontrolled spill, leave the area, warn others and contact emergency services or the trained response team.","Do not touch, smell, neutralise or clean up an unknown chemical. Avoid actions that could spread contamination.","For exposure, follow the product SDS and seek prompt medical advice. Provide responders with the chemical label or SDS if it is safe to do so.","PPE must be selected based on the task, chemical, concentration, exposure route and SDS—not by guesswork.","For dilution of concentrated acid, the general laboratory rule is to add acid slowly to water, never water to acid, while following the approved procedure."], qs:[
+   ["What is the first priority during a large unknown spill?",["Evacuate, warn others and call trained responders","Neutralise it immediately","Mop it up"],0,"Protect people first. Untrained people should not attempt cleanup."],
+   ["Should an untrained person attempt to rescue someone in a contaminated area?",["Yes, without PPE","No; alert trained emergency responders","Only if the chemical has no smell"],1,"Unprotected rescue can create additional casualties. Call trained responders."],
+   ["What should guide PPE selection?",["The task, chemical, exposure and SDS","The cheapest available gloves","A single PPE set for every chemical"],0,"PPE must match the specific hazard and exposure conditions."],
+   ["What information should be given to medical responders when safe?",["The chemical label or SDS","Only the container colour","A guess about the smell"],0,"The label and SDS help responders identify the substance and its hazards."],
+   ["When diluting concentrated acid, which is the safer general rule?",["Add acid slowly to water","Pour water into acid","Mix both quickly"],0,"Adding acid to water reduces the risk of violent heating and splashing." ]
+  ]}
+ ];
+ let order=[], lessonIndex=0, questionIndex=0, score=0, lessonScore=0;
+ const out=()=>document.querySelector('#lout');
+ const shuffle=a=>{const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+ const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function begin(){order=shuffle(lessons.map((_,i)=>i));lessonIndex=0;score=0;lessonScore=0;showStudy();}
+ function showStudy(){const L=lessons[order[lessonIndex]];out().innerHTML=`<div class="card"><p class="sm">STUDY MODULE ${lessonIndex+1} OF ${order.length}</p><h2>${safe(L.title)}</h2><p>${safe(L.intro)}</p><h3>Key points to understand</h3><ol>${L.points.map(x=>`<li style="margin:8px 0">${safe(x)}</li>`).join('')}</ol><p class="sm">Read the material, then answer five questions based on this module. The next study topic will appear after you finish.</p><button class="p" id="startModuleQuiz">Start 5-question quiz →</button></div>`;document.querySelector('#startModuleQuiz').onclick=()=>{questionIndex=0;lessonScore=0;showQuestion();};}
+ function showQuestion(){const L=lessons[order[lessonIndex]],Q=L.qs[questionIndex],opts=shuffle(Q[1].map((v,i)=>({v,correct:i===Q[2]})));out().innerHTML=`<div class="card"><p class="sm">${safe(L.title)} · Question ${questionIndex+1}/5 · Module score ${lessonScore}/5</p><h3>${safe(Q[0])}</h3>${opts.map((x,i)=>`<button class="q" data-i="${i}">${safe(x.v)}</button>`).join('')}<p id="learnFeedback"></p></div>`;
+  out().querySelectorAll('.q').forEach(b=>b.onclick=()=>{const chosen=opts[+b.dataset.i],ok=chosen.correct;if(ok){lessonScore++;score++;}out().querySelectorAll('.q').forEach((x,i)=>{x.disabled=true;if(opts[i].correct)x.classList.add('right');});if(!ok)b.classList.add('bad');document.querySelector('#learnFeedback').innerHTML=`<b>${ok?'Correct!':'Not quite.'}</b> ${safe(Q[3])}<br><br><button class="p" id="nextLearnQ">${questionIndex===4?'Finish module':'Next question →'}</button>`;document.querySelector('#nextLearnQ').onclick=()=>{questionIndex++;if(questionIndex<5)showQuestion();else showModuleResult();};});}
+ function showModuleResult(){const L=lessons[order[lessonIndex]];out().innerHTML=`<div class="card"><p class="sm">MODULE COMPLETE</p><h2>${safe(L.title)}</h2><h3>Your score: ${lessonScore}/5</h3><p>${lessonScore===5?'Excellent work!':lessonScore>=3?'Good progress. Review the study points if needed.':'Take a moment to review the study material before continuing.'}</p><button class="p" id="nextStudy">${lessonIndex===order.length-1?'View final result':'Next study topic →'}</button></div>`;document.querySelector('#nextStudy').onclick=()=>{lessonIndex++;if(lessonIndex<order.length)showStudy();else showFinal();};}
+ function showFinal(){out().innerHTML=`<div class="card"><p class="sm">LEARNING SESSION COMPLETE</p><h2>Well done!</h2><h3>Overall score: ${score}/${lessons.length*5}</h3><p>You completed all four study modules and their quizzes.</p><button class="p" id="restartLearning">Start a new randomized session ↻</button></div>`;document.querySelector('#restartLearning').onclick=begin;}
+ window.quiz=begin;
+})();
+</script>
+
 </body></html>
